@@ -1,0 +1,360 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+            <div class="col-md-12">
+                <!-- page header -->
+                <div class="d-md-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>Answers</h2>
+                        <!-- breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Answers</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- button -->
+                    <div>
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAnswerModal">New Answers</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- row -->
+        <div class="row">
+            <div class="col-xl-12 col-12 mb-5">
+                <!-- card -->
+                <div class="card h-100 card-lg">
+                    <div class="px-6 py-6">
+                        <div class="row justify-content-between">
+                            <!-- form -->
+                            <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                                <form class="d-flex" role="search" method="get" action="{% url 'backend_answers' %}">
+                                    <input class="form-control" type="search" name="q" placeholder="Search answer" aria-label="Search" value="{{ request.GET.q }}">
+                                </form>
+                            </div>
+                            <!-- select option -->
+                            {% comment %} <div class="col-lg-2 col-md-4 col-12">
+                                <select class="form-select">
+                                    <option selected="">Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Deactive</option>
+                                    <option value="3">Draft</option>
+                                </select>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                    <!-- card body -->
+                    <div class="card-body p-0">
+                        <!-- table -->
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover text-nowrap table-borderless mb-0 table-with-checkbox">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Question Name</th>
+                                        <th>Answered By</th>
+                                        <th>Answer</th>
+                                        <th>Approved</th>
+                                        <th>ApprovedBy</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for answer in answers %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ answer.QuestionName }}</td>
+                                        <td>{{ answer.AnswerBy }}</td>
+                                        <td>{{ answer.Answer }}</td>
+                                        <td>{{ answer.IsApproved }}</td>
+                                        <td>{{ answer.ApprovedBy }}</td>
+                                        <td class="d-flex">
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteAnswerModal{{ answer.id }}"
+                                            style="cursor: pointer;">
+                                                <i class="bi bi-trash me-3"></i> Delete
+                                            </a>
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editAnswerModal{{ answer.id }}"
+                                            style="cursor: pointer;">
+                                                <i class="bi bi-pencil-square me-3"></i> Edit
+                                            </a>
+                                        </td>
+                                        
+                                    <!-- Edit Answer Modal -->
+                                    <div class="modal fade" id="editAnswerModal{{ answer.id }}" tabindex="-1" aria-labelledby="editAnswerModalLabel{{ answer.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header align-items-center d-flex">
+                                                    <h5 class="modal-title" id="editAnswerModalLabel">Edit Answer</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form class="row mb-4 needs-validation" novalidate method="POST" action="{% url "edit-answers" answer.id %}">
+                                                        {% csrf_token %}
+                                                        <div class="row">
+                                                             <!-- Question Name Dropdown -->
+                                                            <div class="mb-3 col-12 col-md-6">
+                                                                <label for="editQuestionName{{ answer.id }}" class="form-label">Question Name</label>
+                                                                <select id="editQuestionName{{ answer.id }}" class="form-control" name="questionName" required>
+                                                                    {% for question in questions %}
+                                                                        <option value="{{ question.id }}" {% if question.id == answer.QuestionName.id %}selected{% endif %}>
+                                                                            {{ question.QuestionName }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <div class="invalid-feedback">Please select a question name.</div>
+                                                            </div>
+
+                                                            <!-- Answered By Dropdown -->
+                                                            <div class="mb-3 col-12 col-md-6">
+                                                                <label for="editAnswerBy{{ answer.id }}" class="form-label">Answered By</label>
+                                                                <select id="editAnswerBy{{ answer.id }}" class="form-control" name="answerBy" required>
+                                                                    {% for who_post in who_posts %}
+                                                                        <option value="{{ who_post.id }}" {% if who_post.id == answer.AnswerBy.id %}selected{% endif %}>
+                                                                            {{ who_post.PostedBy }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <div class="invalid-feedback">Please select the user who answered.</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <!-- Is Approved Field -->
+                                                            <div class="mb-3 col-12 col-md-6">
+                                                                <label for="editIsApproved{{ answer.id }}" class="form-label">Is Approved</label>
+                                                                <select id="editIsApproved{{ answer.id }}" class="form-control" name="isApproved" required>
+                                                                    <option value="true" {% if answer.IsApproved %}selected{% endif %}>Yes</option>
+                                                                    <option value="false" {% if not answer.IsApproved %}selected{% endif %}>No</option>
+                                                                </select>
+                                                                <div class="invalid-feedback">Please select approval status.</div>
+                                                            </div>
+
+                                                            <!-- Approved By Dropdown -->
+                                                            <div class="mb-3 col-12 col-md-6">
+                                                                <label for="editApprovedBy{{ answer.id }}" class="form-label">Approved By</label>
+                                                                <select id="editApprovedBy{{ answer.id }}" class="form-control" name="approvedBy" required>
+                                                                    {% for teacher in teachers %}
+                                                                        <option value="{{ teacher.id }}" {% if teacher.id == answer.ApprovedBy.id %}selected{% endif %}>
+                                                                            {{ teacher.firstName }} {{ teacher.lastName }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <div class="invalid-feedback">Please select the approver.</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <!-- Answer Text Field -->
+                                                            <div class="mb-3 col-12">
+                                                                <label for="editAnswerText{{ answer.id }}" class="form-label">Answer</label>
+                                                                <textarea id="editAnswerText{{ answer.id }}" class="form-control" name="answer" required>{{ answer.Answer }}</textarea>
+                                                                <div class="invalid-feedback">Please enter the answer text.</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Submit Button -->
+                                                        <div class="col-md-12 text-end">
+                                                            <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            <!-- Delete Answer Modal -->
+                            <div class="modal fade" id="deleteAnswerModal{{ answer.id }}" tabindex="-1" aria-labelledby="deleteAnswerModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteAnswerModalLabel">Delete Answer</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete this answer?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="{% url "delete-answer" answer.id %}?page={{ answers.number }}&query={{ query }}" class="btn btn-danger">Yes, Delete</a>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+                        <span>
+                            Showing 
+                            {{ answers.start_index }} to {{ answers.end_index }} of {{ answers.paginator.count }} entries
+                        </span>
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                {% if answers.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ answers.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                                            Previous
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Previous</span>
+                                    </li>
+                                {% endif %}
+                        
+                                <!-- Pagination Links -->
+                                {% for num in answers.paginator.page_range %}
+                                    {% if num <= 3 or num > answers.paginator.num_pages|add:"-2" or num == answers.number or num == answers.number|add:"-1" or num == answers.number|add:"1" %}
+                                        <li class="page-item {% if answers.number == num %}active{% endif %}">
+                                            <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == 4 or num == answers.paginator.num_pages|add:"-3" %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                <!-- Next Button -->
+                                {% if answers.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ answers.next_page_number }}&query={{ query }}" aria-label="Next">
+                                            Next
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Next</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Answer Modal -->
+<div class="modal fade" id="addAnswerModal" tabindex="-1" aria-labelledby="addAnswerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header align-items-center d-flex">
+                <h5 class="modal-title" id="addAnswerModalLabel">Add New Answer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row mb-4 needs-validation" novalidate method="POST" action="{% url "answers-upload" %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Switch for choosing input method -->
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+                        <label class="form-check-label" for="csvSwitch">Add Multiple Answers with CSV</label>
+                    </div>
+                    <!-- Single Answer Fields -->
+                    <div id="singleAnswerFields">
+                        <div class="row">
+                            <div class="mb-3 col-12 col-md-6">
+                                <label for="questionName" class="form-label">Question Name</label>
+                                <select class="form-select" id="questionName" name="QuestionName" required>
+                                    <option value="" selected disabled>Select Question</option>
+                                    {% for question in questions %}
+                                        <option value="{{ question.id }}">{{ question.QuestionName }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a question.</div>
+                            </div>
+    
+                            <div class="mb-3 col-12 col-md-6">
+                                <label for="answerBy" class="form-label">Answer By</label>
+                                <select class="form-select" id="answerBy" name="answerBy" required>
+                                    <option value="" selected disabled>Select Answered By</option>
+                                    {% for who_post in who_posts %}
+                                        <option value="{{ who_post.id }}">{{ who_post.PostedBy }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select who answered.</div>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="mb-3 col-12 col-md-6">
+                                <label for="isApproved" class="form-label">Is Approved</label>
+                                <select class="form-select" id="isApproved" name="isApproved" required>
+                                    <option value="" selected disabled>Select Approval Status</option>
+                                    <option value="True">Yes</option>
+                                    <option value="False">No</option>
+                                </select>
+                                <div class="invalid-feedback">Please select approval status.</div>
+                            </div>
+    
+                            <div class="mb-3 col-12 col-md-6">
+                                <label for="approvedBy" class="form-label">Approved By</label>
+                                <select class="form-select" id="approvedBy" name="approvedBy" required>
+                                    <option value="" selected disabled>Select Approved By</option>
+                                    {% for teacher in teachers %}
+                                        <option value="{{ teacher.id }}">{{ teacher.firstName }} {{ teacher.lastName }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select who approved the answer.</div>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="mb-3 col-12">
+                                <label for="answer" class="form-label">Answer</label>
+                                <textarea class="form-control" id="answer" name="answer" rows="4" required></textarea>
+                                <div class="invalid-feedback">Please enter an answer.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CSV Upload Field -->
+                    
+                    <div id="bulkUploadField" style="display: none;">
+                        <div class="mb-3 col-12">
+                            <label for="csvFile" class="form-label">Upload CSV File</label>
+                            <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required>
+                            <div class="invalid-feedback">Please upload a CSV file.</div>
+                        </div>
+                    </div>
+                  
+
+                    <div class="col-md-6 col-12">
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Data</button>
+                    </div>
+                </form>         
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   function toggleFormMode() {
+       const singleFields = document.getElementById('singleAnswerFields');
+       const bulkUpload = document.getElementById('bulkUploadField');
+       const csvSwitch = document.getElementById('csvSwitch');
+       
+       if (csvSwitch.checked) {
+           singleFields.style.display = 'none';
+           bulkUpload.style.display = 'block';
+       } else {
+           singleFields.style.display = 'block';
+           bulkUpload.style.display = 'none';
+       }
+   }
+</script>
+
+{% endblock content %}

@@ -1,0 +1,328 @@
+{% load static %}
+<!-- navbar -->
+<div class="border-bottom">
+    <div class="py-5" style="background: #00496b;">
+       <div class="container-fluid">
+          <div class="row w-100 align-items-center gx-lg-2 gx-0 ps-6">
+             <div class="col-xxl-2 col-lg-3 col-md-6 col-5">
+                <a class="navbar-brand d-none d-lg-block" href="{% url "home" %}">
+                   <img src="{% static 'assets/img/logo/logo.png' %}"/>
+                </a>
+                <div class="d-flex justify-content-between w-100 d-lg-none">
+                   <a class="navbar-brand" href="{% url "home" %}">
+                      <img src="{% static 'assets/img/logo/logo.png' %}"/>
+                   </a>
+                </div>
+             </div>
+             <div class="col-xxl-5 col-lg-5 d-none d-lg-block">
+                <form action="#">
+                   <div class="input-group">
+                      <input class="form-control rounded" type="search" placeholder="Enter Keywords" />
+                      <span class="input-group-append">
+                         <button class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end" type="button">
+                            <svg
+                               xmlns="http://www.w3.org/2000/svg"
+                               width="16"
+                               height="16"
+                               viewBox="0 0 24 24"
+                               fill="none"
+                               stroke="currentColor"
+                               stroke-width="2"
+                               stroke-linecap="round"
+                               stroke-linejoin="round"
+                               class="feather feather-search">
+                               <circle cx="11" cy="11" r="8"></circle>
+                               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                         </button>
+                      </span>
+                   </div>
+                </form>
+             </div>
+             <div class="col-md-2 col-xxl-3 d-none d-lg-block">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-outline-gray-400 text-muted" data-bs-toggle="modal" data-bs-target="#userModal">
+                   <i class="feather-icon icon-user me-2"></i>
+                   Log In
+                </button>
+             </div>
+             <div class="col-lg-2 col-xxl-2 text-end col-md-6 col-7 pe-8">
+                <div class="list-inline d-flex mt-4">
+                    <div class="list-inline-item me-5">
+                     <p class="text-white">Good morning, Thiago</p>
+                    </div> 
+                    <div class="list-inline-item me-5">
+                     <a href="#!" class="text-muted" data-bs-toggle="modal" data-bs-target="#userModal">
+                       <i class="feather-icon icon-user" style="font-size: 20px;"></i>
+                     </a>
+                    </div> 
+
+                   <div class="list-inline-item me-5 me-lg-0">
+                     <a class="text-muted position-relative" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" href="#offcanvasExample" role="button" aria-controls="offcanvasRight">
+                        <!-- Font Awesome Bell Icon -->
+                        <i class="fa fa-bell" style="font-size: 20px;"></i>
+                        <!-- Notification Badge -->
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                           1
+                           <span class="visually-hidden">unread messages</span>
+                        </span>
+                     </a>
+                  </div>
+                  
+
+                   <div class="list-inline-item d-inline-block d-lg-none">
+                      <!-- Button -->
+                      <button
+                         class="navbar-toggler collapsed"
+                         type="button"
+                         data-bs-toggle="offcanvas"
+                         data-bs-target="#navbar-default"
+                         aria-controls="navbar-default"
+                         aria-label="Toggle navigation">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-text-indent-left text-primary" viewBox="0 0 16 16">
+                            <path
+                               d="M2 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm.646 2.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8 2.646 6.354a.5.5 0 0 1 0-.708zM7 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 3a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                         </svg>
+                      </button>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light navbar-default py-0 pb-lg-4 bg-warning" aria-label="Offcanvas navbar large">
+       <div class="container">
+          <div class="offcanvas offcanvas-start" tabindex="-1" id="navbar-default" aria-labelledby="navbar-defaultLabel">
+             <div class="offcanvas-header pb-1">
+                <a href="index.html"><img src="{% static 'assets/img/logo/logo.png' %}"/></a>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+             </div>
+             <div class="offcanvas-body mt-3">
+                <div class="d-block d-lg-none mb-4">
+                   <form action="#">
+                      <div class="input-group">
+                         <input class="form-control rounded" type="search" placeholder="Enter Keywords" />
+                         <span class="input-group-append">
+                            <button class="btn bg-white border border-start-0 ms-n10 rounded-0 rounded-end" type="button">
+                               <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  class="feather feather-search">
+                                  <circle cx="11" cy="11" r="8"></circle>
+                                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                               </svg>
+                            </button>
+                         </span>
+                      </div>
+                   </form>
+                   <div class="mt-2">
+                      <button type="button" class="btn btn-outline-gray-400 text-muted w-100" data-bs-toggle="modal" data-bs-target="#userModal">
+                         <i class="feather-icon icon-user me-2"></i>
+                         Log In
+                      </button>
+                   </div>
+                </div>
+                <div class="d-block d-lg-none mb-4">
+                   <button type="button" class="btn btn-outline-gray-400 text-muted w-100" data-bs-toggle="modal" data-bs-target="#askModal">
+                      <i class="bi bi-plus me-2"></i>
+                      ASK A QUESTION
+                   </button>
+                </div>
+                <div class="dropdown me-3 d-none d-lg-block">
+                   <button type="button" class="btn btn-outline-gray-400 text-muted w-100" data-bs-toggle="modal" data-bs-target="#askModal">
+                      <i class="bi bi-plus me-2"></i>
+                      ASK A QUESTION
+                   </button>
+                </div>
+                <div>
+                   <ul class="navbar-nav align-items-center">
+                      <li class="nav-item w-100 w-lg-auto {% if page_name == 'Home' %}active-menu{% endif %}">
+                         <a class="nav-link" href="{% url "home" %}">Home</a>
+                      </li>
+                      <li class="nav-item w-100 w-lg-auto">
+                         <a class="nav-link {% if page_name == 'About' %}active-menu{% endif %}" href="{% url "about" %}">About Us</a>
+                      </li>
+                      <li class="nav-item w-100 w-lg-auto">
+                         <a class="nav-link {% if page_name == 'Contact' %}active-menu{% endif %}" href="{% url "contact" %}">Contact Us</a>
+                      </li>
+ 
+                      <li class="nav-item dropdown w-100 w-lg-auto {% if page_name == 'Resources' %}active-menu{% endif %}">
+                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url "questions-class-levels" %}">Questions</a></li>
+                            <li><a class="dropdown-item" href="{% url "notes-class-levels" %}">Notes</a></li>
+                            <li><a class="dropdown-item" href="{% url "books-class-levels" %}">Books</a></li>
+                            <li><a class="dropdown-item" href="{% url "papers-class-levels" %}">Previous Papers</a></li>
+                         </ul>
+                      </li>
+                      {% if request.user.is_authenticated %}
+                      {% if request.user.role == 'admin' or request.user.role == 'teacher' %}
+                      <li class="nav-item w-100 w-lg-auto ">
+                         <a class="nav-link" href="{% url "dashboard" %}">Dashboard</a>
+                      </li>
+                      {% endif %}
+                      {% endif %}
+                   </ul>
+                </div>
+             </div>
+          </div>
+       </div>
+    </nav>
+ </div>
+ <!-- Login Modal -->
+ <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+       <div class="modal-content p-4">
+          <div class="modal-header border-0">
+             <h5 class="modal-title fs-3 fw-bold" id="userModalLabel">USER LOGIN</h5>
+
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+             <form class="needs-validation" novalidate method='POST' action= '{% url "login" %}'>
+               {% csrf_token %}
+                <div class="mb-4">
+                   <label for="Username" class="form-label">Username</label>
+                   <input type="text" class="form-control" name="username" id="Username" placeholder="Username" required />
+                   <div class="invalid-feedback">Please enter username.</div>
+                </div>
+                <div class="mb-4">
+                   <label for="password" class="form-label">Password</label>
+                   <input type="password" class="form-control" name="password" id="password" placeholder="Password" required />
+                   <div class="invalid-feedback">Please enter password.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" type="submit">LOGIN</button>
+             </form>
+          </div>
+       </div>
+    </div>
+ </div>
+
+ <div class="modal fade" id="askModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+         <div class="modal-header border-0">
+            <h5 class="modal-title fs-3 fw-bold" id="userModalLabel">ASK A QUESTION</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <form class="needs-validation" novalidate method='POST' action= '{% url "ask-question" %}'>
+               {% csrf_token %}
+               <div class="mb-4">
+                  <label for="Subject" class="form-label">Subject</label>
+                  <select class="form-select" name="subject" required>
+                     <option selected="" disabled>Select...</option>
+                     {% for subject_context in subjects_context %}
+                     <option value="{{ subject_context.id }}">{{ subject_context.SubjectName }}</option>
+                     {% endfor %}
+                  </select>
+                  <div class="invalid-feedback">Please select a subject.</div>
+               </div>
+               <div class="mb-4">
+                  <label for="message" class="form-label">Message</label>
+                  <textarea class="form-control" id="validationTextarea" placeholder="Enter a question" rows="4" name="message" required></textarea>
+                  <div class="invalid-feedback">Please enter a question.</div>
+               </div>
+               <button type="submit" class="btn btn-primary">SUBMIT MESSAGE</button>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+
+
+ <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+
+   <div class="offcanvas-body">
+      <div>
+          <!-- Alert (You can modify this as needed) -->
+          <div class="alert alert-danger p-2" role="alert">
+              Here is asked question notifications
+          </div>
+
+          
+          <!-- List of Notifications -->
+          {% if request.user.is_authenticated %}
+           {% if request.user.role == 'teacher' %}
+          <ul class="list-group list-group-flush">
+              {% for notification in notifications %}
+                  <li class="list-group-item py-3 ps-0">
+                      <div class="row align-items-center">
+                          <div class="col-12">
+                              <div class="d-flex">
+                                  <div class="ms-3">
+                                      <a href="{% url "ask-question-list" notification.ask_question.id %}" class="text-decoration-none">
+                                          <h6 class="mb-0">{{ notification.message }}</h6>
+                                          <span class="">{{ notification.created_at|date:"D, d M Y H:i" }}</span>
+                                      </a>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+              {% empty %}
+                  <li class="list-group-item py-3 ps-0">
+                      <div class="row align-items-center">
+                          <div class="col-12">
+                              <div class="d-flex">
+                                  <div class="ms-3">
+                                      <h6 class="mb-0">No new notifications</h6>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+              {% endfor %}
+
+               {% else %}
+          <ul class="list-group list-group-flush">
+              {% for notification in notifications %}
+                  <li class="list-group-item py-3 ps-0">
+                      <div class="row align-items-center">
+                          <div class="col-12">
+                              <div class="d-flex">
+                                  <div class="ms-3">
+                                      <a href="{% url "answer-question-list"  notification.answer_question.id %}" class="text-decoration-none">
+                                          <h6 class="mb-0">{{ notification.message }}</h6>
+                                          <span class="">{{ notification.created_at|date:"D, d M Y H:i" }}</span>
+                                      </a>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+              {% empty %}
+                  <li class="list-group-item py-3 ps-0">
+                      <div class="row align-items-center">
+                          <div class="col-12">
+                              <div class="d-flex">
+                                  <div class="ms-3">
+                                      <h6 class="mb-0">No new notifications</h6>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </li>
+              {% endfor %}
+              {% endif %}
+              {% endif %}
+          </ul>
+      </div>
+   </div>
+  
+
+
+
+ </div>
+
+ <script src="assets/js/vendors/validation.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

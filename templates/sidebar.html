@@ -1,0 +1,97 @@
+<div class="col-lg-2 col-md-2 col-12 border-end d-none d-md-block">
+    <div class="pt-10 pe-lg-10">
+       <!-- nav -->
+       <ul class="nav flex-column nav-pills nav-pills-dark">
+          <!-- nav item -->
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'Dashboard' %}active{% endif %}" aria-current="page" href="{% url "dashboard" %}">
+                <i class="feather-icon icon-shopping-bag me-2"></i>
+                Dashboard
+             </a> 
+          </li>
+          {% if request.user.is_authenticated %}
+          {% if request.user.role == 'admin' %}
+          <!-- nav item -->
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'Teachers' %}active{% endif %}" href="{% url "teachers" %}">
+                <i class="feather-icon icon-settings me-2"></i>
+                Teachers
+             </a>
+          </li>
+          <!-- nav item -->
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'Students' %}active{% endif %}" href="{% url "students" %}">
+                <i class="feather-icon icon-map-pin me-2"></i>
+                Students
+             </a>
+          </li>
+          {% endif %}
+          {% endif %}
+          <!-- nav item -->
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendQuestions' %}active{% endif %}" href="{% url "backend_questions" %}">
+                <i class="feather-icon icon-credit-card me-2"></i>
+                Questions
+             </a>
+          </li>
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendAnswers' %}active{% endif %}" href="{% url "backend_answers" %}">
+                <i class="feather-icon icon-credit-card me-2"></i>
+                Answers
+             </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if page_name == 'Comments' %}active{% endif %}" href="{% url "backend-comments" %}">
+               <i class="feather-icon icon-credit-card me-2"></i>
+               Comments
+            </a>
+         </li>
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendBooks' %}active{% endif %}" href="{% url "backend_books" %}">
+                <i class="feather-icon icon-credit-card me-2"></i>
+                Books
+             </a>
+          </li>
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendPapers' %}active{% endif %}" href="{% url "backend_papers" %}">
+                <i class="feather-icon icon-credit-card me-2"></i>
+                Previous Papers
+             </a>
+          </li>
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendVideo' %}active{% endif %}" href="{% url "backend_video" %}">
+                <i class="feather-icon icon-credit-card me-2"></i>
+                Video Lessons
+             </a>
+          </li>
+          <!-- nav item -->
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendNotes' %}active{% endif %}" href="{% url "backend_notes" %}">
+                <i class="feather-icon icon-bell me-2"></i>
+                Notes
+             </a>
+          </li> 
+          <li class="nav-item">
+             <a class="nav-link {% if page_name == 'BackendProfile' %}active{% endif %}" href="{% url "backend_profile" %}">
+                <i class="feather-icon icon-settings me-2"></i>
+                My Profile
+             </a>
+          </li>                          
+          <!-- nav item -->
+          <li class="nav-item">
+             <hr>
+          </li>
+          <!-- nav item -->
+          <li class="nav-item mb-8">
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+               {% csrf_token %}
+               <a class="nav-link" href="{% url 'logout' %}" onclick="event.preventDefault(); this.closest('form').submit();">
+                   <i class="feather-icon icon-log-out me-2"></i>
+                   Log out
+               </a>
+           </form>
+           
+          </li>
+       </ul>
+    </div>
+ </div>

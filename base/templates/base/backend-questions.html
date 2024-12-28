@@ -1,0 +1,375 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+            <div class="col-md-12">
+                <!-- page header -->
+                <div class="d-md-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>Questions</h2>
+                        <!-- breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Questions</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- button -->
+                    <div>
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTeacherModal">New Question</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- row -->
+        <div class="row">
+            <div class="col-xl-12 col-12 mb-5">
+                <!-- card -->
+                <div class="card h-100 card-lg">
+                    <div class="px-6 py-6">
+                        <div class="row justify-content-between">
+                            <!-- form -->
+                            <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                                <form class="d-flex" role="search" method="get" action="{% url 'backend_questions' %}">
+                                    <input class="form-control" type="search" name="q" placeholder="Search question" aria-label="Search" value="{{ request.GET.q }}">
+                                </form>
+                            </div>
+                            <!-- select option -->
+                            {% comment %} <div class="col-lg-2 col-md-4 col-12">
+                                <select class="form-select">
+                                    <option selected="">Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Deactive</option>
+                                    <option value="3">Draft</option>
+                                </select>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                    <!-- card body -->
+                    <div class="card-body p-0">
+                        <!-- table -->
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover text-nowrap table-borderless mb-0 table-with-checkbox">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>QuestionName</th>
+                                        <th>LevelName</th>
+                                        <th>SubjectName</th>
+                                        <th>QuestionBy</th>
+                                        <th>IsApproved</th>
+                                        <th>ApprovedBy</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for question in questions %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ question.QuestionName }}</td>
+                                        <td>{{ question.LevelName }}</td>
+                                        <td>{{ question.SubjectName }}</td>
+                                        <td>{{ question.QuestionBy }}</td>
+                                        <td>{{ question.IsApproved }}</td>
+                                        <td>{{ question.ApprovedBy }}</td>
+                                        <td class="d-flex">
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteTeacherModal{{ question.id }}" style="cursor: pointer;">
+                                                <i class="bi bi-trash me-3"></i>
+                                                Delete
+                                            </a>
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editTeacherModal{{ question.id }}" style="cursor: pointer;">
+                                                <i class="bi bi-pencil-square me-3"></i>
+                                                Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                     <!-- Edit Teacher Modal -->
+                     <div class="modal fade" id="editTeacherModal{{ question.id }}" tabindex="-1" aria-labelledby="editTeacherModalLabel{{ question.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                           <div class="modal-content">
+                              <div class="modal-header align-items-center d-flex">
+                                    <h5 class="modal-title" id="editTeacherModalLabel">Edit Question</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                    <form class="row mb-4 needs-validation" novalidate="" method="POST" action="{% url 'edit-question' question.id %}">
+                                       {% csrf_token %}
+                                       <div class="mb-3 col-12 col-md-12">
+                                          <label for="editQuestionName{{ question.id }}" class="form-label">Question Name</label>
+                                          <input id="editQuestionName{{ question.id }}" type="text" class="form-control" name="questionName" value="{{ question.QuestionName }}" required="">
+                                          <div class="invalid-feedback">Please enter question name.</div>
+                                       </div>
+                                       <div class="row">
+                                        <div class="mb-3 col-12 col-md-6">
+                                            <label for="editQuestionBy{{ question.id }}" class="form-label">Question By</label>
+                                            <select class="form-select" id="editQuestionBy{{ question.id }}" name="questionBy" required="">
+                                                  <option value="" disabled>Select Question By</option>
+                                                  {% for who_post in who_posts %}
+                                                     <option value="{{ who_post.id }}" {% if who_post.id == question.QuestionBy.id %}selected{% endif %}>
+                                                        {{ who_post.PostedBy }}
+                                                     </option>
+                                                  {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select who posted the question.</div>
+                                         </div>
+  
+                                         <div class="mb-3 col-12 col-md-6">
+                                            <label for="editLevelName{{ question.id }}" class="form-label">Level Name</label>
+                                            <select class="form-select" id="editLevelName{{ question.id }}" name="levelName" required="">
+                                                  <option value="" disabled>Select Level</option>
+                                                  {% for level in levels %}
+                                                     <option value="{{ level.id }}" {% if level.id == question.LevelName.id %}selected{% endif %}>
+                                                        {{ level.LevelName }}
+                                                     </option>
+                                                  {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select a level.</div>
+                                         </div>
+                                       </div>
+
+                                       <div class="row">
+                                        <div class="mb-3 col-12 col-md-4">
+                                            <label for="editSubjectName{{ question.id }}" class="form-label">Subject Name</label>
+                                            <select class="form-select" id="editSubjectName{{ question.id }}" name="subjectName" required="">
+                                                  <option value="" disabled>Select Subject</option>
+                                                  {% for subject in subjects %}
+                                                     <option value="{{ subject.id }}" {% if subject.id == question.SubjectName.id %}selected{% endif %}>
+                                                        {{ subject.SubjectName }}
+                                                     </option>
+                                                  {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select a subject.</div>
+                                         </div>
+  
+                                         <div class="mb-3 col-12 col-md-4">
+                                            <label for="editIsApproved{{ question.id }}" class="form-label">Is Approved</label>
+                                            <select class="form-select" id="editIsApproved{{ question.id }}" name="isApproved" required="">
+                                                  <option value="" disabled>Select Approval Status</option>
+                                                  <option value="True" {% if question.IsApproved %}selected{% endif %}>Yes</option>
+                                                  <option value="False" {% if not question.IsApproved %}selected{% endif %}>No</option>
+                                            </select>
+                                            <div class="invalid-feedback">Please select approval status.</div>
+                                         </div>
+  
+                                         <div class="mb-3 col-12 col-md-4">
+                                            <label for="editApprovedBy{{ question.id }}" class="form-label">Approved By</label>
+                                            <select class="form-select" id="editApprovedBy{{ question.id }}" name="approvedBy" required="">
+                                                  <option value="" disabled>Select Approved By</option>
+                                                  {% for teacher in teachers %}
+                                                     <option value="{{ teacher.id }}" {% if teacher.id == question.ApprovedBy.id %}selected{% endif %}>
+                                                        {{ teacher.firstName }} {{ teacher.lastName }}
+                                                     </option>
+                                                  {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Please select who approved the question.</div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-6 col-12">
+                                          <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Changes</button>
+                                       </div>
+                                    </form>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+
+                                    <!-- Delete Teacher Modal -->
+                                    <div class="modal fade" id="deleteTeacherModal{{ question.id }}" tabindex="-1" aria-labelledby="deleteTeacherModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteTeacherModalLabel">Delete Teacher</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete this Question ?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <a href="{% url 'delete-question' question.id %}?page={{ questions.number }}&query={{ query }}" class="btn btn-danger">Yes, Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+                        <span>
+                            Showing 
+                            {{ questions.start_index }} to {{ questions.end_index }} of {{ questions.paginator.count }} entries
+                        </span>
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                {% if questions.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ questions.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                                            Previous
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Previous</span>
+                                    </li>
+                                {% endif %}
+                        
+                                <!-- Pagination Links -->
+                                {% for num in questions.paginator.page_range %}
+                                    {% if num <= 3 or num > questions.paginator.num_pages|add:"-2" or num == questions.number or num == questions.number|add:"-1" or num == questions.number|add:"1" %}
+                                        <li class="page-item {% if questions.number == num %}active{% endif %}">
+                                            <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == 4 or num == questions.paginator.num_pages|add:"-3" %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                <!-- Next Button -->
+                                {% if questions.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ questions.next_page_number }}&query={{ query }}" aria-label="Next">
+                                            Next
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Next</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" id="addTeacherModal" tabindex="-1" aria-labelledby="addTeacherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header align-items-center d-flex">
+                <h5 class="modal-title" id="addTeacherModalLabel">Add New Question</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <form class="row mb-4 needs-validation" novalidate="" method="POST" action="{% url 'add-questions' %}" enctype="multipart/form-data">
+                  {% csrf_token %}
+              
+                  <!-- Switch for choosing input method -->
+                  <div class="form-check form-switch mb-4">
+                      <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+                      <label class="form-check-label" for="csvSwitch">Add Multiple Questions with CSV</label>
+                  </div>
+              
+                  <!-- Single Question Fields -->
+                  <div id="singleQuestionFields">
+                      <div class="mb-3 col-12 col-md-12">
+                          <label for="questionName" class="form-label">Question Name</label>
+                          <input type="text" class="form-control" id="questionName" name="questionName" placeholder="Question Name" required="">
+                          <div class="invalid-feedback">Please enter question name.</div>
+                      </div>
+              
+                      <div class="row">
+                        <div class="mb-3 col-12 col-md-6">
+                            <label for="questionBy" class="form-label">Question By</label>
+                            <select class="form-select" id="questionBy" name="questionBy" required="">
+                                <option value="" selected disabled>Select Question By</option>
+                                {% for who_post in who_posts %}
+                                    <option value="{{ who_post.id }}">{{ who_post.PostedBy }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select who posted the question.</div>
+                        </div>
+                
+                        <div class="mb-3 col-12 col-md-6">
+                            <label for="levelName" class="form-label">Level Name</label>
+                            <select class="form-select" id="levelName" name="levelName" required="">
+                                <option value="" selected disabled>Select Level</option>
+                                {% for level in levels %}
+                                    <option value="{{ level.id }}">{{ level.LevelName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select a level.</div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="subjectName" class="form-label">Subject Name</label>
+                            <select class="form-select" id="subjectName" name="subjectName" required="">
+                                <option value="" selected disabled>Select Subject</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.SubjectName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select a subject.</div>
+                        </div>
+                
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="isApproved" class="form-label">Is Approved</label>
+                            <select class="form-select" id="isApproved" name="isApproved" required="">
+                                <option value="" selected disabled>Select Approval Status</option>
+                                <option value="True">Yes</option>
+                                <option value="False">No</option>
+                            </select>
+                            <div class="invalid-feedback">Please select approval status.</div>
+                        </div>
+                
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="approvedBy" class="form-label">Approved By</label>
+                            <select class="form-select" id="approvedBy" name="approvedBy" required="">
+                                <option value="" selected disabled>Select Approved By</option>
+                                {% for teacher in teachers %}
+                                    <option value="{{ teacher.id }}">{{ teacher.firstName }} {{ teacher.lastName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select who approved the question.</div>
+                        </div>
+                      </div>                      
+                  </div>
+              
+                  <!-- CSV Upload Field -->
+                  <div id="bulkUploadField" style="display: none;">
+                      <div class="mb-3 col-12">
+                          <label for="csvFile" class="form-label">Upload CSV File</label>
+                          <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required="">
+                          <div class="invalid-feedback">Please upload a CSV file.</div>
+                      </div>
+                  </div>
+              
+                  <div class="col-md-6 col-12">
+                      <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Data</button>
+                  </div>
+              </form>         
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   function toggleFormMode() {
+       const singleFields = document.getElementById('singleQuestionFields');
+       const bulkUpload = document.getElementById('bulkUploadField');
+       const csvSwitch = document.getElementById('csvSwitch');
+       
+       if (csvSwitch.checked) {
+           singleFields.style.display = 'none';
+           bulkUpload.style.display = 'block';
+       } else {
+           singleFields.style.display = 'block';
+           bulkUpload.style.display = 'none';
+       }
+   }
+</script>
+{% endblock content %}

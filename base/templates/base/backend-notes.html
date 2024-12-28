@@ -1,0 +1,248 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+            <div class="col-md-12">
+                <!-- page header -->
+                <div class="d-md-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>Manage Notes</h2>
+                        <!-- breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Notes</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- button to open add modal -->
+                    <div>
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">Add New Note</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-6">
+            <div class="row justify-content-between">
+               <!-- form -->
+               <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                <form class="d-flex" role="search" method="get" action="{% url 'backend_notes' %}">
+                    <input class="form-control" type="search" name="q" placeholder="Search notes" aria-label="Search" value="{{ request.GET.q }}">
+                </form>
+            </div>
+               {% comment %} <!-- select option -->
+               <div class="col-lg-2 col-md-4 col-12">
+                  <select class="form-select">
+                     <option selected>Status</option>
+                     <option value="1">Active</option>
+                     <option value="2">Deactive</option>
+                     <option value="3">Draft</option>
+                  </select>
+               </div> {% endcomment %}
+
+            </div>
+         </div>
+        <!-- notes table -->
+        <div class="row">
+            <div class="col-xl-12 col-12 mb-5">
+                <div class="card h-100 card-lg">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover text-nowrap table-borderless mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Notes Name</th>
+                                        <th>Subject Name</th>
+                                        <th>Level Name</th>
+                                        <th>Upload File</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for note in notes %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ note.NotesName }}</td>
+                                        <td>{{ note.SubjectName }}</td>
+                                        <td>{{ note.LevelName }}</td>
+                                        <td> <a href="{{ note.UploadFile.url }}" target="_blank">View</a> </td>
+                                        <td class="d-flex">
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editNoteModal{{ note.id }}"
+                                            style="cursor: pointer;">
+                                                <i class="bi bi-pencil-square me-3"></i> Edit
+                                            </a>
+                                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteNoteModal{{ note.id }}" 
+                                            style="cursor: pointer;">
+                                                <i class="bi bi-trash me-3"></i>Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                        <!-- Delete Modal for each note -->
+                                    <div class="modal fade" id="deleteNoteModal{{ note.id }}" tabindex="-1" aria-labelledby="deleteNoteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Delete Note</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure you want to delete this note?</p>
+                                                    <form method="POST" action="{% url 'delete-notes' note.id %}?page={{ notes.number }}&query={{ query }}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Edit Note Modal -->
+                                    <div class="modal fade" id="editNoteModal{{ note.id }}" tabindex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editNoteModalLabel">Edit Note</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="post" action="{% url 'edit-notes' note.id %}" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="mb-3">
+                                                            <label for="notesName{{ note.id }}" class="form-label">Notes Name</label>
+                                                            <input type="text" class="form-control" id="notesName{{ note.id }}" name="NotesName" value="{{ note.NotesName }}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="subjectName{{ note.id }}" class="form-label">Subject Name</label>
+                                                            <select class="form-select" id="subjectName{{ note.id }}" name="SubjectName" required>
+                                                                {% for subject in subjects %}
+                                                                <option value="{{ subject.id }}" {% if subject.id == note.SubjectName.id %}selected{% endif %}>
+                                                                    {{ subject.SubjectName }}
+                                                                </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label for="levelName{{ note.id }}" class="form-label">Level Name</label>
+                                                            <select class="form-select" id="levelName{{ note.id }}" name="LevelName" required>
+                                                                {% for level in levels %}
+                                                                <option value="{{ level.id }}" {% if level.id == note.LevelName.id %}selected{% endif %}>
+                                                                    {{ level.LevelName }}
+                                                                </option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                         <label for="edit-uploaded-file-{{ note.id }}" class="form-label">Uploaded PDF</label>
+                                                         {% if note.UploadFile %}
+                                                             <div class="mb-2">
+                                                                 <!-- Display the PDF as a link -->
+                                                                 <a href="{{ note.UploadFile.url }}" target="_blank">View current PDF</a>
+                                                             </div>
+                                                             <!-- Optionally embed the PDF for direct viewing -->
+                                                             {% comment %} <embed src="{{ book.UploadFile.url }}" type="application/pdf" width="100%" height="400px"> {% endcomment %}
+                                                         {% else %}
+                                                             <p>No PDF uploaded.</p>
+                                                         {% endif %}
+                                                         <input type="file" class="form-control" id="edit-uploaded-file-{{ note.id }}" name="UploadFile" accept="application/pdf">
+                                                         <small class="form-text text-muted">Upload a new PDF to replace the existing file.</small>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+                        <span>
+                            Showing 
+                            {{ notes.start_index }} to {{ notes.end_index }} of {{ notes.paginator.count }} entries
+                        </span>
+                        <nav aria-label="Page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <!-- Previous Button -->
+                                {% if notes.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ notes.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                                            Previous
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Previous</span>
+                                    </li>
+                                {% endif %}
+                        
+                                <!-- Pagination Links -->
+                                {% for num in notes.paginator.page_range %}
+                                    {% if num <= 3 or num > notes.paginator.num_pages|add:"-2" or num == notes.number or num == notes.number|add:"-1" or num == notes.number|add:"1" %}
+                                        <li class="page-item {% if notes.number == num %}active{% endif %}">
+                                            <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                                        </li>
+                                    {% elif num == 4 or num == notes.paginator.num_pages|add:"-3" %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                <!-- Next Button -->
+                                {% if notes.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link mx-1" href="?page={{ notes.next_page_number }}&query={{ query }}" aria-label="Next">
+                                            Next
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link mx-1">Next</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                     </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h5 class="modal-title">Add New Note</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+           </div>
+           <div class="modal-body">
+               <form method="POST" enctype="multipart/form-data" action="{% url 'notes-upload' %}">
+                   {% csrf_token %}
+                   <div class="mb-3">
+                       <label for="UploadCSV" class="form-label">Upload CSV</label>
+                       <input type="file" name="csv_file" class="form-control" accept=".csv">
+                   </div>
+                   <div class="mb-3">
+                       <label for="UploadPDFs" class="form-label">Upload Multiple PDFs</label>
+                       <input type="file" name="pdf_files" class="form-control" accept=".pdf" multiple>
+                   </div>
+                   <button type="submit" class="btn btn-primary">Add Note</button>
+               </form>
+           </div>
+       </div>
+   </div>
+</div>
+{% endblock %}

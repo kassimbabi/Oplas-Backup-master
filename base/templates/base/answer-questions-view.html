@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-md-12">
+            <h2 class="text-center mb-4">Your Questions and Answers</h2>
+
+            <!-- Check if the student has any questions -->
+            {% if questions %}
+                <ul class="list-group">
+                    {% for question in questions %}
+                        <li class="list-group-item mb-3">
+                            <h4>{{ question.subject.SubjectName }} - {{ question.class_name.ClassName }}</h4>
+                            <p><strong>Question:</strong> {{ question.question_text }}</p>
+                            <small>Asked on: {{ question.created_at|date:"D, d M Y H:i" }}</small>
+
+                            {% if question.is_answered %}
+                                <div class="alert alert-success mt-3" role="alert">
+                                    <h5>Teacher's Answer:</h5>
+                                    <p>{{ question.answer.answer_text }}</p>
+                                    <small>Answered by: {{ question.answer.answered_by.first_name }} on {{ question.answer.created_at|date:"Y-m-d H:i" }}</small>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning mt-3" role="alert">
+                                    This question has not been answered yet.
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info">
+                    <p>You have not asked any questions yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

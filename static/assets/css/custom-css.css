@@ -1,0 +1,29 @@
+/*.bg-primary {
+    background-color: #00496b !important;
+}*/
+/*.btn:hover {
+    background-color: #fab017 !important;
+    border-color: #fab017 !important;
+}*/
+.btn {
+    background-color: #00496b !important;
+    border: var(--fc-btn-border-width) solid #fff !important;
+}
+.text-muted {
+    color: #fff !important;
+}
+.bg-warning {
+    --fc-bg-opacity: 1;
+    background-color: #faaf18 !important;
+}
+.slick-slider .slick-slide {
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+}
+.footer .nav .nav-item .nav-link {
+    color: #889397 !important;
+}
+#left-nav:hover{
+background-color: #f0f0f0 !important;
+border-left: 5px solid #faaf18 !important;
+}

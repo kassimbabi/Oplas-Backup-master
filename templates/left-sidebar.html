@@ -1,0 +1,121 @@
+{% load static %}
+
+
+
+<aside class="col-lg-2 col-md-2 mb-6 mb-md-0 border-end">
+    <div class="offcanvas offcanvas-start offcanvas-collapse w-md-50" tabindex="-1" id="offcanvasCategory" aria-labelledby="offcanvasCategoryLabel">
+        <div class="offcanvas-header d-lg-none">
+            <h5 class="offcanvas-title" id="offcanvasCategoryLabel">Filter</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body ps-lg-2 pt-lg-4">
+            <div class="mb-8">
+                <ul class="nav nav-category" id="categoryCollapseMenu">
+                    <li class="nav-item w-100 d-flex mb-4 mt-4">
+                        <a href="{% url 'asked_questions' %}" class="nav-link collapsed fs-5 fw-bold active"  style="color:#0aad0a;">
+                            <i class="bi bi-question-circle pe-3 fw-bold ps-4"></i>
+                            Asked Questions
+                        </a>       
+                    </li>
+                    <li class="nav-item w-100 d-flex mb-4">
+                        <a href="#" class="nav-link collapsed fs-5 fw-bold active" data-bs-toggle="collapse" data-bs-target="#categoryFlushTwo" aria-expanded="false" aria-controls="categoryFlushTwo" style="color:#0aad0a;">
+                            <i class="bi bi-trophy pe-3 fw-bold ps-4"></i>
+                            Games
+                        </a>       
+                    </li>
+                    <li class="nav-item w-100 d-flex mb-4">
+                        <a href="#" class="nav-link collapsed fs-5 fw-bold active" data-bs-toggle="collapse" data-bs-target="#categoryFlushThree" aria-expanded="false" aria-controls="categoryFlushThree" style="color:#0aad0a;">
+                            <i class="bi bi-people pe-3 fw-bold ps-4"></i>
+                            Discussions
+                        </a>       
+                    </li>
+                    <li class="nav-item w-100 d-flex mb-4">
+                        <a href="{% url 'videos-classes-levels' %}" class="nav-link fs-5 fw-bold active" style="color:#0aad0a;">
+                            <i class="bi bi-youtube pe-3 fw-bold ps-4"></i>
+                            Video Lessons
+                        </a>       
+                    </li>
+                    <li class="nav-item w-100 d-flex mb-4">
+                        <a href="#" class="nav-link collapsed fs-5 fw-bold active" data-bs-toggle="collapse" data-bs-target="#categoryFlushFour" aria-expanded="false" aria-controls="categoryFlushFour" style="color:#0aad0a;">
+                            <i class="bi bi-book pe-3 fw-bold ps-4"></i>
+                            Assignments
+                        </a>       
+                    </li>
+                    <li class="nav-item w-100 d-flex mb-6">
+                        <a href="#" class="nav-link collapsed fs-5 fw-bold active" data-bs-toggle="collapse" data-bs-target="#categoryFlushFive" aria-expanded="false" aria-controls="categoryFlushFive" style="color:#0aad0a;">
+                            <i class="bi bi-file-pdf pe-3 fw-bold ps-4"></i>
+                            Class Exams
+                        </a>       
+                    </li>
+                    {% if request.user.role == 'student' %}
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    <li class="nav-item w-100 d-flex mb-6">
+                        <a href="{% url "logout" %}" class="nav-link collapsed fs-5 fw-bold active"  aria-expanded="false" aria-controls="categoryFlushFive" style="color:#0aad0a;">
+                            <i class="fa fa-sign-out pe-3 fw-bold ps-4"></i>
+                            Log Out
+                        </a>       
+                    </li>
+                   </form>
+                    {% endif %}
+                </ul>
+                <div class="collapse" id="categoryFlushOne">
+                    <div class="card card-body">
+                        <!-- Content for the Questions section -->
+                        <p>Your questions content goes here.</p>
+                    </div>
+                </div>
+                <div class="collapse" id="categoryFlushTwo">
+                    <div class="card card-body">
+                        <!-- Content for the Games section -->
+                        <p>Your games content goes here.</p>
+                    </div>
+                </div>
+                <div class="collapse" id="categoryFlushThree">
+                    <div class="card card-body">
+                        <!-- Content for the Discussions section -->
+                        <p>Your discussions content goes here.</p>
+                    </div>
+                </div>
+                <div class="collapse" id="categoryFlushFour">
+                    <div class="card card-body">
+                        <!-- Content for the Assignments section -->
+                        <p>Your assignments content goes here.</p>
+                    </div>
+                </div>
+                <div class="collapse" id="categoryFlushFive">
+                    <div class="card card-body">
+                        <!-- Content for the Class Exams section -->
+                        <p>Your class exams content goes here.</p>
+                    </div>
+                </div>
+                <center>
+                    <ul class="pb-4 border-top border-bottom me-6">
+                        <li class="nav-item w-100 d-flex mb-4">                                    
+                            <li class="list-inline-item me-1">
+                                <a href="#!" class="btn btn-xs btn-social btn-icon">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item me-1">
+                                <a href="#!" class="btn btn-xs btn-social btn-icon">
+                                    <i class="bi bi-twitter"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#!" class="btn btn-xs btn-social btn-icon">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                            </li>       
+                        </li>
+                    </ul>
+                </center>
+                <div class="copyright" style="text-align: center;">
+                    Copyright © 2024 Oplas Tanzania
+                    <br>
+                    <a href="#">Terms</a> | <a href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>
+

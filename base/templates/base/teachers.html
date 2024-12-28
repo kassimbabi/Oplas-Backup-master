@@ -1,0 +1,433 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+           <div class="col-md-12">
+              <!-- page header -->
+              <div class="d-md-flex justify-content-between align-items-center">
+                 <div>
+                    <h2>Teachers</h2>
+                    <!-- breacrumb -->
+                    <nav aria-label="breadcrumb">
+                       <ol class="breadcrumb mb-0">
+                          <li class="breadcrumb-item"><a href="{% url "dashboard" %}">Dashboard</a></li>
+                          <li class="breadcrumb-item" aria-current="page">Teachers</li>
+                       </ol>
+                    </nav>
+                 </div>
+                 <!-- button -->
+                 <div>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" 
+                    data-bs-target="#paymentModal">New Teacher</a>
+                 </div>
+              </div>
+           </div>
+        </div>
+    
+        <!-- row -->
+        <div class="row">
+           <div class="col-xl-12 col-12 mb-5">
+              <!-- card -->
+              <div class="card h-100 card-lg">
+                 <div class="px-6 py-6">
+                    <div class="row justify-content-between">
+                       <!-- form -->
+                       <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                        <form class="d-flex" role="search" method="get" action="{% url 'teachers' %}">
+                            <input class="form-control" type="search" name="q" placeholder="Search teacher" aria-label="Search" value="{{ request.GET.q }}">
+                        </form>
+                    </div>
+                    
+                       <!-- select option -->
+                       {% comment %} <div class="col-lg-2 col-md-4 col-12">
+                          <select class="form-select">
+                             <option selected="">Status</option>
+                             <option value="1">Active</option>
+                             <option value="2">Deactive</option>
+                             <option value="3">Draft</option>
+                          </select>
+                       </div> {% endcomment %}
+                    </div>
+                 </div>
+                 <!-- card body -->
+                 <div class="card-body p-0">
+                    <!-- table -->
+                    <div class="table-responsive">
+                       <table class="table table-centered table-hover text-nowrap table-borderless mb-0 table-with-checkbox">
+                          <thead class="bg-light">
+                             <tr>
+                                <th> Sn</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Middle Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Education Level</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Actions</th> <!-- Actions column -->
+                             </tr>
+                          </thead>
+                          <tbody>
+                             <!-- table row -->
+                              {% for teacher in teachers %}
+                             <tr>
+                                <td> {{ forloop.counter }}</td>
+                                <td>{{ teacher.firstName }}</td>
+                                   <td>{{ teacher.middleName }}</td>
+                                   <td>{{ teacher.lastName }}</td>
+                                  <td>{{ teacher.educationLevel.LevelName }}</td>
+                                  <td>{{ teacher.emailAddress }}</td>
+                                  <td>{{ teacher.phoneNumber }}</td>
+
+                                  <td class="d-flex">
+                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteTeacherModal{{ teacher.id }}"
+                                    style="cursor: pointer;">
+                                       <i class="bi bi-trash me-3"></i>
+                                       Delete
+                                     </a>
+                                     <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editTeacherModal{{ teacher.id }}"
+                                     style="cursor: pointer;">
+                                       <i class="bi bi-pencil-square me-3"></i>
+                                       Edit
+                                     </a>
+                                  </td>
+                             </tr>
+                             {% endfor %}
+                          </tbody>
+                       </table>
+                    </div>
+                 </div>
+<!-- Pagination -->
+<div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+   <span>
+       Showing 
+       {{ teachers.start_index }} to {{ teachers.end_index }} of {{ teachers.paginator.count }} entries
+   </span>
+   <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <!-- Previous Button -->
+        {% if teachers.has_previous %}
+            <li class="page-item">
+                <a class="page-link mx-1" href="?page={{ teachers.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                    Previous
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link mx-1">Previous</span>
+            </li>
+        {% endif %}
+
+        <!-- Pagination Links -->
+        {% for num in teachers.paginator.page_range %}
+            {% if num <= 3 or num > teachers.paginator.num_pages|add:"-2" or num == teachers.number or num == teachers.number|add:"-1" or num == teachers.number|add:"1" %}
+                <li class="page-item {% if teachers.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                </li>
+            {% elif num == 4 or num == teachers.paginator.num_pages|add:"-3" %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Button -->
+        {% if teachers.has_next %}
+            <li class="page-item">
+                <a class="page-link mx-1" href="?page={{ teachers.next_page_number }}&query={{ query }}" aria-label="Next">
+                    Next
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link mx-1">Next</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+</div>
+
+
+              </div>
+           </div>
+        </div>
+     </div>
+ </div>
+
+<!-- add Teacher Modal -->
+ 
+ <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+       <!-- Modal content -->
+       <div class="modal-content">
+           <!-- Modal header -->
+           <div class="modal-header align-items-center d-flex">
+               <h5 class="modal-title" id="paymentModalLabel">Add New Teacher</h5>
+               <!-- Close button -->
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+           <!-- Modal body -->
+           <div class="modal-body">
+               <!-- Switch for choosing input method -->
+               <div class="form-check form-switch mb-4">
+                   <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+                   <label class="form-check-label" for="csvSwitch">Add Multiple Teachers with CSV</label>
+               </div>
+               
+               <!-- Form for adding a single teacher -->
+                   <form id="singleTeacherForm" class="row mb-4 needs-validation" method="POST" action="{% url 'add-teacher' %}">
+                     {% csrf_token %}
+                       <!-- First Name -->
+                       <div class="mb-3 col-12 col-md-4">
+                           <label for="teacherFirstName" class="form-label">First Name</label>
+                           <input id="teacherFirstName" type="text" class="form-control" name="first_name" placeholder="Enter First Name" required="">
+                           <div class="invalid-feedback">Please enter first name.</div>
+                       </div>
+                       <!-- Middle Name -->
+                       <div class="mb-3 col-12 col-md-4">
+                           <label for="teacherMiddleName" class="form-label">Middle Name</label>
+                           <input id="teacherMiddleName" type="text" class="form-control" name="middle_name" placeholder="Enter Middle Name">
+                       </div>
+                       <!-- Last Name -->
+                       <div class="mb-3 col-12 col-md-4">
+                           <label for="teacherLastName" class="form-label">Last Name</label>
+                           <input id="teacherLastName" type="text" class="form-control" name="last_name" placeholder="Enter Last Name" required="">
+                           <div class="invalid-feedback">Please enter last name.</div>
+                       </div>
+
+                       <!-- Gender -->
+                       <div class="mb-3 col-12 col-md-6">
+                           <label for="teacherGender" class="form-label">Gender</label>
+                           <select class="form-select" id="teacherGender" name="gender" required="">
+                               <option value="">Select Gender</option>
+                               {% for gender in genders %}
+                               <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
+                               {% endfor %}
+                               
+                           </select>
+                           <div class="invalid-feedback">Please select gender.</div>
+                       </div>
+                       <!-- Date of Birth -->
+                       <div class="mb-3 col-12 col-md-6">
+                           <label for="teacherDob" class="form-label">Date of Birth</label>
+                           <input type="date" class="form-control" id="teacherDob" name="dob" required="">
+                           <div class="invalid-feedback">Please enter date of birth.</div>
+                       </div>
+                       <!-- education level  -->
+                       <div class="mb-3 col-12 col-md-6">
+                        <label for="teacherEducationLevel" class="form-label">Education Level</label>
+                        <select class="form-select" id="teacherEducationLevel" name="education_level" required="">
+                            <option value="">Select Education Level</option>
+                            {% for level in education_levels %}
+                            <option value="{{ level.id }}">{{ level.LevelName }}</option>
+                            {% endfor %}
+                            
+                        </select>
+                        <div class="invalid-feedback">Please select Education Level.</div>
+                    </div>
+                       <!-- Email -->
+                       <div class="mb-3 col-md-6 col-12">
+                           <label for="teacherEmail" class="form-label">Email</label>
+                           <input type="email" class="form-control" id="teacherEmail" name="email_address" placeholder="Enter Email" required="">
+                           <div class="invalid-feedback">Please enter a valid email address.</div>
+                       </div>
+                       <!-- Phone -->
+                       <div class="mb-3 col-md-4 col-12">
+                           <label for="teacherPhone" class="form-label">Phone</label>
+                           <input type="tel" class="form-control" id="teacherPhone" name="phone_number" placeholder="Enter Phone Number" required="">
+                           <div class="invalid-feedback">Please enter a phone number.</div>
+                       </div>
+                       <!-- address -->
+                       <div class="mb-3 col-md-4 col-12">
+                           <label for="teacherAddress" class="form-label">Address</label>
+                           <input type="text" class="form-control" id="teacherAddress" name="address" placeholder="Enter Address" required="">
+                           <div class="invalid-feedback">Please enter department.</div>
+                       </div>
+                          <!-- Status  -->
+                       <div class="mb-3 col-12 col-md-4">
+                        <label for="teacherStatus" class="form-label">Status</label>
+                        <select class="form-select" id="teacherStatus" name="status" required="">
+                            <option value="">Select Status</option>
+                            {% for status in statuses %}
+                            <option value="{{ status.id }}">{{ status.StatusName }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Please select Status.</div>
+                    </div>
+                       <!-- Button -->
+                       <div class="col-md-6 col-12">
+                           <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Data</button>
+                       </div>
+                   </form>
+
+                   <form class="row mb-4 needs-validation" id="csvUploadForm" method="POST" action="{% url 'teachers' %}" 
+                   enctype="multipart/form-data">
+                     {% csrf_token %}
+                     <div class="mb-3 col-12">
+                         <label for="teacherCsv" class="form-label">Upload CSV File</label>
+                         <input type="file" class="form-control" id="teacherCsv" name="csv_file" accept=".csv" required="">
+                         <div class="invalid-feedback">Please upload a CSV file.</div>
+                         <div class="form-text">Upload a CSV file to add multiple teachers at once.</div>
+                     </div>
+                     <!-- Button -->
+                     <div class="col-md-6 col-12">
+                         <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
+                     </div>
+                 </form>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% for teacher in teachers %}
+<!-- Edit Teacher Modal -->
+<div class="modal fade" id="editTeacherModal{{ teacher.id }}" tabindex="-1" aria-labelledby="editTeacherModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="editTeacherModalLabel">Edit Teacher</h5>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+       </div>
+       <div class="modal-body">
+         <form method="POST" action="{% url 'edit-teacher' teacher.id %}">
+           {% csrf_token %}
+           <div class="row">
+               <!-- First Name -->
+               <div class="mb-3 col-md-4">
+                  <label for="editFirstName{{ teacher.id }}" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="editFirstName{{ teacher.id }}" name="firstName" value="{{ teacher.firstName }}" required>
+               </div>
+
+               <!-- Middle Name -->
+               <div class="mb-3 col-md-4">
+                  <label for="editMiddleName{{ teacher.id }}" class="form-label">Middle Name</label>
+                  <input type="text" class="form-control" id="editMiddleName{{ teacher.id }}" name="middleName" value="{{ teacher.middleName }}" required>
+               </div>
+
+               <!-- Last Name -->
+               <div class="mb-3 col-md-4">
+                  <label for="editLastName{{ teacher.id }}" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="editLastName{{ teacher.id }}" name="lastName" value="{{ teacher.lastName }}" required>
+               </div>
+           </div>
+
+           <div class="row">
+               <!-- Gender -->
+               <div class="mb-3 col-md-6">
+                  <label for="editStatus{{ teacher.id }}" class="form-label">Gender</label>
+                  <select class="form-select" id="editGender{{ teacher.id }}" name="gender" required>
+                  <option value="">Select Gender</option>
+                  {% for gender in genders %}
+                  <option value="{{ gender.id }}" {% if gender.id == teacher.gender.id %}selected{% endif %}>{{ gender.GenderName }}</option>
+                  {% endfor %}
+                  </select>
+               </div>
+
+                  <!-- dob-->
+                  <div class="mb-3 col-md-6">
+                     <label for="editdob{{ teacher.id }}" class="form-label">DOB</label>
+                     <input type="date" class="form-control" id="editEmail{{ teacher.id }}" name="dob" value="{{ teacher.dob }}" required>
+                  </div>
+           </div>
+
+           <div class="row">
+               <!-- Education level -->
+               <div class="mb-3 col-md-6">
+                  <label for="editlevel{{ teacher.id }}" class="form-label">Education Level</label>
+                  <select class="form-select" id="editlevel{{ teacher.id }}" name="educationLevel" required>
+                  <option value="">Education Level</option>
+                  {% for level in education_levels %}
+                  <option value="{{ level.id }}" {% if level.id == teacher.level.id %}selected{% endif %}>{{ level.LevelName }}</option>
+                  {% endfor %}
+                  </select>
+               </div>
+
+               <!-- Email -->
+               <div class="mb-3 col-md-6">
+                  <label for="editEmail{{ teacher.id }}" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="editEmail{{ teacher.id }}" name="emailAddress" value="{{ teacher.emailAddress }}" required>
+               </div>
+           </div>
+
+           <div class="row">
+               <!-- Phone Number -->
+               <div class="mb-3 col-md-4">
+                  <label for="editPhone{{ teacher.id }}" class="form-label">Phone Number</label>
+                  <input type="text" class="form-control" id="editPhone{{ teacher.id }}" name="phoneNumber" value="{{ teacher.phoneNumber }}" required>
+               </div>
+
+               <!-- Address -->
+               <div class="mb-3 col-md-4">
+                  <label for="editAddress{{ teacher.id }}" class="form-label">Address</label>
+                  <input type="text" class="form-control" id="editAddress{{ teacher.id }}" name="address" value="{{ teacher.address }}" required>
+               </div>
+
+            <!-- Status -->
+            <div class="mb-3 col-md-4">
+               <label for="editStatus{{ teacher.id }}" class="form-label">Status</label>
+               <select class="form-select" id="editStatus{{ teacher.id }}" name="status" required>
+                  <option value="">Select Status</option>
+                  {% for status in statuses %}
+                  <option value="{{ status.id }}" {% if status.id == teacher.status.id %}selected{% endif %}>{{ status.StatusName }}</option>
+                  {% endfor %}
+               </select>
+            </div>
+           </div>
+
+           <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+             <button type="submit" class="btn btn-primary">Update Teacher</button>
+           </div>
+         </form>
+       </div>
+     </div>
+   </div>
+ </div>
+
+
+      <!-- Delete Teacher Modal -->
+      <div class="modal fade" id="deleteTeacherModal{{ teacher.id }}" tabindex="-1" aria-labelledby="deleteTeacherModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="deleteTeacherModalLabel">Delete Teacher</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             </div>
+             <div class="modal-body">
+               Are you sure you want to delete this teacher?
+             </div>
+             <div class="modal-footer">
+               <form method="POST" action="{% url 'delete-teacher' teacher.id %}?page={{ teachers.number }}&query={{ query }}">
+                 {% csrf_token %} 
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                 <button type="submit" class="btn btn-danger">Delete</button>
+               </form>
+             </div>
+           </div>
+         </div>
+       </div>
+ {% endfor %}
+
+ <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const csvUploadForm = document.getElementById('csvUploadForm');
+    csvUploadForm.classList.add('d-none'); // Hide CSV form by default
+   });
+   function toggleFormMode() {
+       const isCsvMode = document.getElementById('csvSwitch').checked;
+       const singleTeacherForm = document.getElementById('singleTeacherForm');
+       const csvUploadForm = document.getElementById('csvUploadForm');
+
+       if (isCsvMode) {
+           singleTeacherForm.classList.add('d-none');
+           csvUploadForm.classList.remove('d-none');
+       } else {
+           singleTeacherForm.classList.remove('d-none');
+           csvUploadForm.classList.add('d-none');
+       }
+   }
+</script>
+<!-- content here -->
+{% endblock %}

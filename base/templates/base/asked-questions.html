@@ -1,0 +1,58 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="container mt-6">
+    <div class="col-md-12">
+        <!-- loop start here -->
+        <div class="mb-6">
+            <div class="d-flex border-bottom pb-2 mb-2">
+                <div class="ms-5">
+                    <h6 class="mb-1">Asked by: Zero Bug</h6>
+                    <p class="small">
+                        <span class="">Asked on December 19, 2024 in</span>
+                        <span class="text-primary ms-1 fw-bold">Mathematics</span>
+                    </p>
+                    <p><a href="{% url "view_asked_questions" %}" class="text-dark fw-bold">What will happen to a person sleeping in a room with pitted plant, if the window and doors are closed?</a></p>
+
+                    <!-- Icons for Comments, Views, etc. -->
+                    <div class="d-flex justify-content-start mt-4">
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-eye me-2"></i> 0
+                        </a>
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-chat-left-dots me-2"></i> 7
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- loop end here -->
+        <div class="mb-2">
+            <div class="d-flex border-bottom pb-2 mb-2">
+                <div class="ms-5">
+                    <h6 class="mb-1">Asked by: Adam Ndembo</h6>
+                    <p class="small">
+                        <span class="">Asked on December 19, 2024 in</span>
+                        <span class="text-primary ms-1 fw-bold">Mathematics</span>
+                    </p>
+                    <p><a href="{% url "view_asked_questions" %}" class="text-dark fw-bold">What will happen to a person sleeping in a room with pitted plant, if the window and doors are closed?</a></p>
+
+                    <!-- Icons for Comments, Views, etc. -->
+                    <div class="d-flex justify-content-start mt-4">
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-eye me-2"></i> 0
+                        </a>
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-chat-left-dots me-2"></i> 7
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- loop end here -->
+
+    </div>
+</div>
+<!-- content here -->
+{% endblock %}

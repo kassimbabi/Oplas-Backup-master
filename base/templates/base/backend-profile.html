@@ -1,0 +1,68 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="col-lg-9 col-md-8 col-12">
+    <div class="py-6 p-md-6 p-lg-10">
+        <h2 class="mb-0">Profile Settings</h2>
+        <hr>
+       <div>
+          <!-- heading -->
+          <div class="row d-flex">
+             <div class="col-lg-6 col-md-6 border-end">
+                <!-- form -->      
+                <h5 class="mb-4">Account Details</h5>         
+                <form action="{% url "backend_profile" %}" method="post">
+                  {% csrf_token %}
+                   <!-- input -->
+                   <div class="mb-3">
+                      <label class="form-label">Username</label>
+                      <input type="text" class="form-control"  name ="username" placeholder="AnomalousUser" value = "{{user.username}}">
+                   </div>
+                   <!-- input -->
+                   <div class="mb-3">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" name ="email" placeholder="example@gmail.com" value = "{{user.email}}">
+                   </div>
+                   <!-- input -->
+                   <div class="mb-5">
+                      <label class="form-label">Phone</label>
+                      <input type="text" class="form-control" name ="phoneNumber" placeholder="Phone number" value = "{{user.phoneNumber}}">
+                   </div>
+                   <!-- button -->
+                   <div class="mb-3">
+                      <button class="btn btn-primary">Change Profile</button>
+                   </div>
+                </form>
+             </div>
+             <div class="pe-lg-14 col-md-6">
+               <!-- heading -->
+               <h5 class="mb-4">Change Password</h5>
+               <form action="{% url "change-password" %}" method="POST">
+                 {% csrf_token %}
+                  <!-- input -->
+                  <div class="mb-3 col-12">
+                     <label class="form-label">Old Password</label>
+                     <input type="password" name="old_password" class="form-control" placeholder="**********" >
+                  </div>
+                  <div class="mb-3 col">
+                     <label class="form-label">New Password</label>
+                     <input type="password" name="new_password" class="form-control" placeholder="**********">
+                  </div>
+                  <!-- input -->
+                  <div class="mb-3 col">
+                     <label class="form-label">Confirm Password</label>
+                     <input type="password" name="confirm_password" class="form-control" placeholder="**********">
+                  </div>
+                  <!-- input -->
+                  <div class="col-12">
+                     <button type="submit"  class="btn btn-primary">Change Password</button>
+                  </div>
+               </form>
+            </div>
+          </div>
+       </div>
+    </div>
+ </div>
+<!-- content here -->
+{% endblock %}

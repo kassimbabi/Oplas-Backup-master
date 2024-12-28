@@ -1,0 +1,55 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-3">
+            <!-- Left Sidebar Content -->
+            <!-- Add any content for the left sidebar here, if needed -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-6">
+
+
+            <h2 class="text-center mb-4">{{ question.student.first_name }} {{ question.student.last_name }}'s Question for {{ question.subject.SubjectName }}</h2>
+            <p><strong>Question:</strong></p>
+            
+         
+            <p>{{ question.question_text }}</p>
+
+            <p>{{ question.class_name }}</p>
+
+
+            {% if question.is_answered %}
+                <div class="alert alert-success" role="alert">
+                    This question has already been answered.
+                </div>
+                <h3>Teacher's Answer:</h3>
+                <p>{{ question.answer.answer_text }}</p>
+                <small>Answered by: {{ question.answer.answered_by.firstName }} on {{ question.answer.created_at|date:"Y-m-d H:i" }}</small>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    This question has not been answered yet.
+                </div>
+
+                <!-- Answer Form -->
+                <form method="POST" class="mb-4" action="{% url "answer-question" question.id %}">
+                    {% csrf_token %}
+                    <textarea name="answer_text" rows="5" placeholder="Write your answer here..." class="form-control mb-2" required></textarea>
+                    <button type="submit" class="btn btn-success w-100">Submit Answer</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-md-3">
+            <!-- Right Sidebar Content -->
+            <!-- Add any content for the right sidebar here, if needed -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}

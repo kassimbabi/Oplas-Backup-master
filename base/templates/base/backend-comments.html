@@ -1,0 +1,176 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+           <div class="col-md-12">
+              <!-- page header -->
+              <div class="d-md-flex justify-content-between align-items-center">
+                 <div>
+                    <h2>Comments</h2>
+                    <!-- breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                       <ol class="breadcrumb mb-0">
+                          <li class="breadcrumb-item"><a href="{% url "dashboard" %}">Dashboard</a></li>
+                          <li class="breadcrumb-item" aria-current="page">Comments</li>
+                       </ol>
+                    </nav>
+                 </div>
+              </div>
+           </div>
+        </div>
+    
+        <!-- row -->
+        <div class="row">
+           <div class="col-xl-12 col-12 mb-5">
+              <!-- card -->
+              <div class="card h-100 card-lg">
+                 <div class="px-6 py-6">
+                    <div class="row justify-content-between">
+                       <!-- form -->
+                       <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                        <form class="d-flex" role="search" method="get" action="{% url 'backend-comments' %}">
+                            <input class="form-control" type="search" name="q" placeholder="Search comment" aria-label="Search" value="{{ request.GET.q }}">
+                        </form>
+                    </div>
+                    </div>
+                 </div>
+                 <!-- card body -->
+                 <div class="card-body p-0">
+                    <!-- table -->
+                    <div class="table-responsive">
+                       <table class="table table-centered table-hover text-nowrap table-borderless mb-0 table-with-checkbox">
+                          <thead class="bg-light">
+                             <tr>
+                                <th>SN</th>
+                                <th>Question</th>
+                                <th>Comment </th>
+                                <th>Student Name</th>
+                                <th>Approved</th>
+                                <th>Actions</th>
+                             </tr>
+                          </thead>
+                          <tbody>
+                           {% for comment in comments %}
+                             <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ comment.question }}</td>
+                                <td>{{ comment.commentText }}</td>
+                                <td>{{ comment.student }}</td>
+                                <td>{{ comment.isApproved }}</td>
+                                <td class="d-flex">
+                                    <!-- Approve button (opens modal) -->
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ comment.id }}">
+                                        <i class="bi bi-check-circle"></i> Approve
+                                    </button>
+                                    
+                                    <!-- Delete button (opens modal) -->
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ comment.id }}">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                 </td>
+                             </tr>
+                             
+                             <!-- Approve Modal -->
+                             <div class="modal fade" id="approveModal{{ comment.id }}" tabindex="-1" aria-labelledby="approveModalLabel{{ comment.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                   <div class="modal-content">
+                                      <div class="modal-header">
+                                         <h5 class="modal-title" id="approveModalLabel{{ comment.id }}">Approve Comment</h5>
+                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                         Are you sure you want to approve this comment?
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                         <form method="POST" action="{% url 'approve-comment' comment.id %}?page={{ comments.number }}&query={{ query }}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success">Approve</button>
+                                         </form>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
+                             
+                             <!-- Delete Modal -->
+                             <div class="modal fade" id="deleteModal{{ comment.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ comment.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                   <div class="modal-content">
+                                      <div class="modal-header">
+                                         <h5 class="modal-title" id="deleteModalLabel{{ comment.id }}">Delete Comment</h5>
+                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                         Are you sure you want to delete this comment ?
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                         <form method="POST" action="{% url "delete-comment" comment.id %}?page={{ comments.number }}&query={{ query }}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                         </form>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
+                             {% empty %}
+                             <tr>
+                                 <td colspan="5" class="text-center">No comments available.</td>
+                             </tr>
+                             {% endfor %}
+                          </tbody>
+                       </table>
+                    </div>
+                 </div>
+
+                 <!-- Pagination -->
+                 <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+                    <span>
+                        Showing 
+                        {{ comments.start_index }} to {{ comments.end_index }} of {{ comments.paginator.count }} entries
+                    </span>
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <!-- Previous Button -->
+                            {% if comments.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link mx-1" href="?page={{ comments.previous_page_number }}" aria-label="Previous">
+                                        Previous
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link mx-1">Previous</span>
+                                </li>
+                            {% endif %}
+
+                            <!-- Pagination Links -->
+                            {% for num in comments.paginator.page_range %}
+                                <li class="page-item {% if comments.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+
+                            <!-- Next Button -->
+                            {% if comments.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link mx-1" href="?page={{ comments.next_page_number }}" aria-label="Next">
+                                        Next
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link mx-1">Next</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                 </div>
+              </div>
+           </div>
+        </div>
+     </div>
+</div>
+{% endblock %}

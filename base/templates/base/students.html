@@ -1,0 +1,424 @@
+{% extends 'teacher-layout.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<div class="col-lg-10 col-md-10 col-12 mb-5">
+    <div class="container-fluid">
+        <div class="row mb-8 mt-8">
+            <div class="col-md-12">
+                <!-- page header -->
+                <div class="d-md-flex justify-content-between align-items-center">
+                    <div>
+                        <h2>Students</h2>
+                        <!-- breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Students</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- button -->
+                    <div>
+                        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#studentModal">New Student</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- row -->
+        <div class="row">
+            <div class="col-xl-12 col-12 mb-5">
+                <!-- card -->
+                <div class="card h-100 card-lg">
+                    <div class="px-6 py-6">
+                        <div class="row justify-content-between">
+                            <!-- form -->
+                            <div class="col-lg-4 col-md-6 col-12 mb-2 mb-lg-0">
+                                <form class="d-flex" role="search" method="get" action="{% url 'students' %}">
+                                    <input class="form-control" type="search" name="q" placeholder="Search student" aria-label="Search" value="{{ request.GET.q }}">
+                                </form>
+                            </div>
+                            
+                            <!-- select option -->
+                            {% comment %} <div class="col-lg-2 col-md-4 col-12">
+                                <select class="form-select">
+                                    <option selected="">Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Inactive</option>
+                                    <option value="3">Graduated</option>
+                                </select>
+                            </div> {% endcomment %}
+                        </div>
+                    </div>
+                    <!-- card body -->
+                    <div class="card-body p-0">
+                        <!-- table -->
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover text-nowrap table-borderless mb-0 table-with-checkbox">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Student ID</th>
+                                        <th>School Level</th>
+                                        <th>Class</th>
+                                        <th>Academic Year</th>
+                                        <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ student.firstName }}</td>
+                                            <td>{{ student.lastName }}</td>
+                                            <td>{{ student.studentID }}</td>
+                                            <td>{{ student.schoolLevel }}</td>
+                                            <td>{{ student.className }}</td>
+                                            <td>{{ student.academicYear }}</td>
+                                            <td>{{ student.address }}</td>
+                                            <td>{{ student.status }}</td>
+                                            <td class="d-flex">
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editStudentModal{{ student.studentID }}"
+                                                style="cursor: pointer;">
+                                                    <i class="bi bi-pencil-square me-3"></i>Edit
+                                                </a>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteStudentModal{{ student.studentID }}"
+                                                style="cursor: pointer;">
+                                                    <i class="bi bi-trash me-3"></i>Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Edit Student Modal -->
+                                        <div class="modal fade" id="editStudentModal{{ student.studentID }}" tabindex="-1" aria-labelledby="editStudentModalLabel{{ student.studentID }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editStudentModalLabel{{ student.studentID }}">Edit Student</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="{% url "edit-student" student.studentID %}" class="row needs-validation" novalidate>
+                                                            {% csrf_token %}
+                                                            <!-- Include fields for editing -->
+                                                             <div class="row">
+                                                                <div class="mb-3 col-md-12">
+                                                                    <label for="studentID" class="form-label">Student ID</label>
+                                                                    <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Student ID" value="{{ student.studentID }}" required>
+                                                                    <div class="invalid-feedback">Please provide a Student ID.</div>
+                                                                 </div>
+                                                             </div>
+
+                                                             <div class="row">
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="firstName{{ student.studentID }}" class="form-label">First Name</label>
+                                                                    <input type="text" class="form-control" id="firstName{{ student.studentID }}" name="firstName" value="{{ student.firstName }}" required>
+                                                                    <div class="invalid-feedback">Please provide a first name.</div>
+                                                                </div>
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="middleName{{ student.studentID }}" class="form-label">Middle Name</label>
+                                                                    <input type="text" class="form-control" id="middleName{{ student.studentID }}" name="middleName" value="{{ student.middleName }}" required>
+                                                                    <div class="invalid-feedback">Please provide a middle name.</div>
+                                                                </div>
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="lastName{{ student.studentID }}" class="form-label">Last Name</label>
+                                                                    <input type="text" class="form-control" id="lastName{{ student.studentID }}" name="lastName" value="{{ student.lastName }}" required>
+                                                                    <div class="invalid-feedback">Please provide a last name.</div>
+                                                                </div>
+                                                             </div>
+
+                                                             <div class="row">
+                                                                <div class="mb-3 col-md-6">
+                                                                    <label for="gender{{ student.studentID }}" class="form-label">Gender</label>
+                                                                    <select class="form-select" id="gender{{ student.studentID }}" name="gender" required>
+                                                                        <option value="">Select Gender</option>
+                                                                        {% for gender in genders %}
+                                                                        <option value="{{ gender.id }}" {% if student.gender.id == gender.id %}selected{% endif %}>{{ gender.GenderName }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <div class="invalid-feedback">Please select a gender.</div>
+                                                                </div>
+
+                                                                <div class="mb-3 col-md-6">
+                                                                    <label for="dob{{ student.studentID }}" class="form-label">Date of Birth</label>
+                                                                    <input type="date" class="form-control" id="dob{{ student.studentID }}" name="dob" value="{{ student.dob|date:'Y-m-d' }}" required>
+                                                                    <div class="invalid-feedback">Please provide a date of birth.</div>
+                                                                </div>
+                                                             </div>
+
+                                                             <div class="row">
+                                                                <div class="mb-3 col-md-6">
+                                                                    <label for="schoolLevel{{ student.studentID }}" class="form-label">School Level</label>
+                                                                    <select class="form-select" id="schoolLevel{{ student.istudentIDd }}" name="schoolLevel" required>
+                                                                        <option value="">Select School Level</option>
+                                                                        {% for level in school_levels %}
+                                                                        <option value="{{ level.id }}" {% if student.schoolLevel.id == level.id %}selected{% endif %}>{{ level.LevelName }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <div class="invalid-feedback">Please select a school level.</div>
+                                                                </div>
+                                                                <div class="mb-3 col-md-6">
+                                                                    <label for="className{{ student.studentID }}" class="form-label">School Class</label>
+                                                                    <select class="form-select" id="className{{ student.studentID }}" name="className" required>
+                                                                        <option value="">Select Class</option>
+                                                                        {% for class in school_classes %}
+                                                                        <option value="{{ class.id }}" {% if student.className.id == class.id %}selected{% endif %}>{{ class.ClassName }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <div class="invalid-feedback">Please select a class.</div>
+                                                                </div>
+                                                             </div>
+                                                            
+                                                             <div class="row">
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="address{{ student.studentID }}" class="form-label">Address</label>
+                                                                    <input type="text" class="form-control" id="address{{ student.studentID }}" name="address" value="{{ student.address }}" required>
+                                                                    <div class="invalid-feedback">Please provide an address.</div>
+                                                                </div>
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="academicYear{{ student.studentID }}" class="form-label">Academic Year</label>
+                                                                    <input type="text" class="form-control" id="academicYear{{ student.studentID }}" name="academicYear" value="{{ student.academicYear }}" required>
+                                                                    <div class="invalid-feedback">Please provide an academic year.</div>
+                                                                </div>
+                                                                <div class="mb-3 col-md-4">
+                                                                    <label for="status{{ student.studentID }}" class="form-label">Status</label>
+                                                                    <select class="form-select" id="status{{ student.studentID }}" name="status" required>
+                                                                        <option value="">Select Status</option>
+                                                                        {% for status in statuses %}
+                                                                        <option value="{{ status.id }}" {% if student.status.id == status.id %}selected{% endif %}>{{ status.StatusName }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <div class="invalid-feedback">Please select a status.</div>
+                                                                </div>
+                                                             </div>
+                                                            <div class="col-12">
+                                                                <button type="submit" class="btn btn-primary">Update Student</button>
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            </div>
+                                                        </form>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Delete Student Modal -->
+                                        <div class="modal fade" id="deleteStudentModal{{ student.studentID }}" tabindex="-1" aria-labelledby="deleteStudentModalLabel{{ student.studentID }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteStudentModalLabel{{ student.studentID }}">Delete Student</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete <strong>{{ student.firstName }} {{ student.lastName }}</strong>?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form method="POST" action="{% url 'delete-student' student.studentID %}?page={{ students.number }}&query={{ query }}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+<!-- Pagination -->
+<div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+    <span>
+        Showing 
+        {{ students.start_index }} to {{ students.end_index }} of {{ students.paginator.count }} entries
+    </span>
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            {% if students.has_previous %}
+                <li class="page-item">
+                    <a class="page-link mx-1" href="?page={{ students.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                        Previous
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link mx-1">Previous</span>
+                </li>
+            {% endif %}
+    
+            <!-- Pagination Links -->
+            {% for num in students.paginator.page_range %}
+                {% if num <= 3 or num > students.paginator.num_pages|add:"-2" or num == students.number or num == students.number|add:"-1" or num == students.number|add:"1" %}
+                    <li class="page-item {% if students.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                    </li>
+                {% elif num == 4 or num == students.paginator.num_pages|add:"-3" %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+    
+            <!-- Next Button -->
+            {% if students.has_next %}
+                <li class="page-item">
+                    <a class="page-link mx-1" href="?page={{ students.next_page_number }}&query={{ query }}" aria-label="Next">
+                        Next
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link mx-1">Next</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+   
+    
+</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+         <div class="modal-header align-items-center d-flex">
+            <h5 class="modal-title" id="studentModalLabel">Add New Student</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+ <!-- Switch for choosing input method -->
+<div class="form-check form-switch mb-4">
+   <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+   <label class="form-check-label" for="csvSwitch">Add Multiple Students with CSV</label>
+</div>
+
+<!-- Single Student Form -->
+<form id="singleStudentForm" method="POST" action="{% url "add-student" %}" class="row needs-validation" novalidate>
+   {% csrf_token %}
+   <div class="mb-3 col-md-12">
+      <label for="studentID" class="form-label">Student ID</label>
+      <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Student ID" required>
+      <div class="invalid-feedback">Please provide a Student ID.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="firstName" class="form-label">First Name</label>
+      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+      <div class="invalid-feedback">Please provide a first name.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="middleName" class="form-label">Middle Name</label>
+      <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Middle Name" required>
+      <div class="invalid-feedback">Please provide a first name.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="lastName" class="form-label">Last Name</label>
+      <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+      <div class="invalid-feedback">Please provide a last name.</div>
+   </div>
+   <div class="mb-3 col-md-6">
+      <label for="gender" class="form-label">Gender</label>
+      <select class="form-select" id="gender" name="gender" required>
+         <option value="">Select Gender</option>
+         {% for gender in genders %}
+         <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
+         {% endfor %}
+      </select>
+      <div class="invalid-feedback">Please select a gender.</div>
+   </div>
+   <div class="mb-3 col-md-6">
+      <label for="dob" class="form-label">Date of Birth</label>
+      <input type="date" class="form-control" id="dob" name="dob" required>
+      <div class="invalid-feedback">Please provide a date of birth.</div>
+   </div>
+   <div class="mb-3 col-md-6">
+      <label for="schoolLevel" class="form-label">School Level</label>
+      <select class="form-select" id="schoolLevel" name="schoolLevel" required>
+         <option value="">Select School Level</option>
+         {% for level in school_levels %}
+         <option value="{{ level.id }}">{{ level.LevelName }}</option>
+         {% endfor %}
+      </select>
+      <div class="invalid-feedback">Please select a school level.</div>
+   </div>
+   <div class="mb-3 col-md-6">
+      <label for="className" class="form-label">School Class</label>
+      <select class="form-select" id="className" name="className" required>
+         <option value="">Select Class</option>
+         {% for class in school_classes %}
+         <option value="{{ class.id }}">{{ class.ClassName }}</option>
+         {% endfor %}
+      </select>
+      <div class="invalid-feedback">Please select a class.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="address" class="form-label">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+      <div class="invalid-feedback">Please provide an address.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="academicYear" class="form-label">Academic Year</label>
+      <input type="text" class="form-control" id="academicYear" name="academicYear" placeholder="Academic Year" required>
+      <div class="invalid-feedback">Please provide an academic year.</div>
+   </div>
+   <div class="mb-3 col-md-4">
+      <label for="status" class="form-label">Status</label>
+      <select class="form-select" id="status" name="status" required>
+         <option value="">Select Status</option>
+         {% for status in statuses %}
+         <option value="{{ status.id }}">{{ status.StatusName }}</option>
+         {% endfor %}
+      </select>
+      <div class="invalid-feedback">Please select a status.</div>
+   </div>
+   <div class="col-12">
+      <button type="submit" class="btn btn-primary">Save Data</button>
+   </div>
+</form>
+
+            <!-- CSV Upload Form -->
+            <form id="csvUploadForm" method="POST" action="{% url "add-student" %}" enctype="multipart/form-data" class="row needs-validation d-none" novalidate >
+            {% csrf_token %}
+            <div class="mb-3 col-md-12">
+                <label for="csvFile" class="form-label">Upload CSV File</label>
+                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required>
+                <div class="invalid-feedback">Please provide a CSV file.</div>
+            </div>
+            <div class="col-md-6 col-12">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
+            </div>
+            </form>
+
+         </div>
+      </div>
+   </div>
+</div>
+
+<script>
+   function toggleFormMode() {
+       const isCsvMode = document.getElementById('csvSwitch').checked;
+       const singleStudentForm = document.getElementById('singleStudentForm');
+       const csvUploadForm = document.getElementById('csvUploadForm');
+
+       if (isCsvMode) {
+           singleStudentForm.classList.add('d-none');
+           csvUploadForm.classList.remove('d-none');
+       } else {
+           singleStudentForm.classList.remove('d-none');
+           csvUploadForm.classList.add('d-none');
+       }
+   }
+</script>
+
+{% endblock %}

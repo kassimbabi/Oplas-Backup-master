@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+      <meta content="Codescandy" name="author" />
+      <title>{{sitename}}</title>
+
+      <link href="{% static 'assets/libs/slick-carousel/slick/slick.css' %}" rel="stylesheet" />
+      <link href="{% static 'assets/libs/slick-carousel/slick/slick-theme.css' %}" rel="stylesheet" />
+      <link href="{% static 'assets/libs/tiny-slider/dist/tiny-slider.css' %}" rel="stylesheet" />
+
+      <!-- Favicon icon-->
+      <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/favicon/favicon.ico' %}" />
+
+      <!-- Libs CSS -->
+      <link href="{% static 'assets/libs/bootstrap-icons/font/bootstrap-icons.min.css' %}" rel="stylesheet" />
+      <link href="{% static 'assets/libs/feather-webfont/dist/feather-icons.css' %}" rel="stylesheet" />
+      <link href="{% static 'assets/libs/simplebar/dist/simplebar.min.css' %}" rel="stylesheet" />
+
+      <!-- Theme CSS -->
+      <link rel="stylesheet" href="{% static 'assets/css/theme.min.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/custom-css.css' %}">
+      <style rel="stylesheet">
+        .active-menu{
+            border-bottom: 3px solid #00496b !important;
+        }
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: var(--fc-breadcrumb-divider,"/") !important;
+        }
+      </style>
+   </head>
+
+   <body>
+    {% include 'navbar.html' %}
+        <main>
+            <div class="container-fluid">
+                <div class="row">
+                <!-- left sidebar -->
+                {% include 'sidebar.html' %}
+                <!-- end leftsidebar -->
+
+                <!-- main layout -->
+                {% block content %} 
+                
+                {% endblock %}
+                <!-- end main layout -->
+                </div>
+            </div>
+        </main>
+
+    {% include 'footer.html' %}
+
+      <!-- Libs JS -->
+      <!-- <script src="assets/libs/jquery/dist/jquery.min.js"></script> -->
+      <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+      <script src="{% static 'assets/libs/simplebar/dist/simplebar.min.js' %}"></script>
+
+      <!-- Theme JS -->
+      <script src="{% static 'assets/js/theme.min.js' %}"></script>
+
+      <script src="{% static 'assets/js/vendors/jquery.min.js' %}"></script>
+      <script src="{% static 'assets/js/vendors/countdown.js' %}"></script>
+      <script src="{% static 'assets/libs/slick-carousel/slick/slick.min.js' %}"></script>
+      <script src="{% static 'assets/js/vendors/slick-slider.js' %}"></script>
+      <script src="{% static 'assets/libs/tiny-slider/dist/min/tiny-slider.js' %}"></script>
+      <script src="{% static 'assets/js/vendors/tns-slider.js' %}"></script>
+      <script src="{% static 'assets/js/vendors/zoom.js' %}"></script>
+   </body>
+</html>

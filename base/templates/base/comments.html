@@ -1,0 +1,36 @@
+
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<h2>{{ question.title }}</h2>
+<p>{{ question.content }}</p>
+
+<div class="comments-section container">
+    <h3>Comments ({{ comments.count }})</h3>
+    
+    <!-- Comment Form -->
+    <form method="POST" class="mb-4" action="{% url 'add-comment' question.id %}">
+        {% csrf_token %}
+        <textarea name="commentText" rows="3" placeholder="Add your comment here..." class="form-control mb-2"></textarea>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+    
+    <!-- Display Comments -->
+    <div class="comments-list">
+        
+        {% for comment in comments %}
+        {% if comment.isApproved %}
+            <div class="comment">
+                <strong>{{ comment.student }}</strong> <small>{{ comment.createdDate|date:"Y-m-d H:i" }}</small>
+                <p>{{ comment.commentText }}</p>
+            </div>
+            {% endif %}
+        {% empty %}
+            <p>No comments yet.</p>
+         
+        {% endfor %}
+        
+    </div>
+</div>
+{% endblock %}

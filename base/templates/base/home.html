@@ -1,0 +1,189 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!-- content here -->
+<section class="mt-2 col-sm-12 col-lg-8 col-md-8 col-xxl-8">
+    <div class="container">
+    <div class="hero-slider pb-5">
+        {% for post in carousel_images %}
+        <div style="background: url('/media/{{ post.Image }}'); background-repeat: no-repeat; height: 500px; background-size: cover; border-radius: 0.5rem; background-position: center">
+            <div class="ps-lg-12 py-lg-16 col-xxl-5 col-md-7 py-14 px-8 text-xs-center">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- round menu -->
+    <div class="row">
+        <div class="row pt-4">
+            <!-- col -->
+            <div class="col-lg-3 col-md-3 col-6">
+                <div class="text-center mb-10">
+                <!-- img -->
+                <a href="{% url 'home' %}"><img src="{% static 'assets/img/menu-icon/01.png' %}" alt="" class="card-image rounded-circle"
+                    ></a>
+                <!-- text -->
+                <div class="mt-4">
+                    <h5 class="fs-6 mb-0"><a href="{% url 'home' %}" class="text-inherit">Questions</a></h5>
+                </div>
+                </div>
+            </div>
+            <!-- col -->
+            <div class="col-lg-3 col-md-3 col-6">
+                <div class="text-center mb-10">
+                <!-- img -->
+                <a href="{% url "notes-class-levels" %}"><img src="{% static 'assets/img/menu-icon/02.png' %}" alt="" class="card-image rounded-circle"></a>
+                <div class="mt-4">
+                    <!-- text -->
+                    <h5 class="fs-6 mb-0"><a href="{% url "notes-class-levels" %}" class="text-inherit">Notes</a></h5>
+                </div>
+                </div>
+            </div>
+            <!-- col -->
+            <div class="col-lg-3 col-md-3 col-6">
+                <div class="text-center mb-10">
+                <!-- img -->
+                <a href="{% url "papers-class-levels" %}"><img src="{% static 'assets/img/menu-icon/03.png' %}" alt="" class="card-image rounded-circle"></a>
+                <!-- text -->
+                <div class="mt-4">
+                    <h5 class="fs-6 mb-0"><a href="{% url "papers-class-levels" %}" class="text-inherit">Previous Papers</a></h5>
+                </div>
+                </div>
+            </div>
+            <!-- col -->
+            <div class="col-lg-3 col-md-3 col-6">
+                <div class="text-center mb-10">
+                <!-- img -->
+                <a href="{% url "books-class-levels" %}"><img src="{% static 'assets/img/menu-icon/04.png' %}" alt="" class="card-image rounded-circle"></a>
+                <!-- text -->
+                <div class="mt-4">
+                    <h5 class="fs-6 mb-0"><a href="{% url "books-class-levels" %}" class="text-inherit">Books</a></h5>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- round menu end -->
+
+    <!-- filter section -->
+   <!-- Filter Section -->
+<div class="d-lg-flex justify-content-between align-items-center border-bottom border-top pt-2 pb-2">
+    <div class="mb-3 mb-lg-0">
+        <p class="mb-0">
+            <span class="text-dark">{{ questions_all.paginator.count }}</span>
+            All Questions
+        </p>
+    </div>
+
+    <!-- Icon for Filters (Visible on smaller screens) -->
+    <div class="d-md-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="ms-2 d-lg-none">
+                <a class="btn btn-outline-gray-400 text-muted" data-bs-toggle="offcanvas" href="#offcanvasCategory" role="button" aria-controls="offcanvasCategory">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter me-2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    Filters
+                </a>
+            </div>
+        </div>
+
+        <div class="d-flex mt-2 mt-lg-0 col-lg-12">
+            <div class="me-2 flex-grow-1">
+                <!-- Filter by Answered/Unanswered -->
+                <form method="get" class="d-flex">
+                    <select name="status" class="form-select me-2" onchange="this.form.submit()">
+                        <option value="">All Questions</option>
+                        <option value="answered" {% if status == 'answered' %}selected{% endif %}>Answered</option>
+                        <option value="unanswered" {% if status == 'unanswered' %}selected{% endif %}>Unanswered</option>
+                    </select>
+
+                    <!-- Filter by Subject -->
+                    <select name="subject" class="form-select" onchange="this.form.submit()">
+                        <option value="">Select Subject</option>
+                        {% for subject in subjects %}
+                            <option value="{{ subject.id }}" {% if subject.id|stringformat:"s" == selected_subject %}selected{% endif %}>
+                                {{ subject.SubjectName }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Display Questions -->
+<div class="container mt-6">
+    <div class="col-md-12">
+        {% for question in questions %}
+        <div class="mb-10">
+            <div class="d-flex border-bottom pb-6 mb-6">
+                <div class="ms-5">
+                    <h6 class="mb-1">Asked by: {{ question.AnswerBy }}</h6>
+                    <p class="small">
+                        <span class="">Asked on {{ question.CreatedDate|date:"F j, Y" }} in </span>
+                        <span class="text-primary ms-1 fw-bold">{{ question.SubjectName }}</span>
+                    </p>
+                    <p><a href="{% url "view_answers" %}" class="text-dark fw-bold">{{ question.QuestionName }}</a></p>
+
+                    <!-- Icons for Comments, Views, etc. -->
+                    <div class="d-flex justify-content-start mt-4">
+                        <!-- <a href="{% url "add-comment" question.id %}" class=""> 
+                            <i class="bi bi-reply me-1"></i> {{ question.comments.count }}
+                        </a> -->
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-eye me-2"></i> {{ question.views }}
+                        </a>
+                        <a href="#" class="ms-4">
+                            <i class="bi bi-chat-left-dots me-2"></i> {{ question.answers.count }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No questions found for the selected criteria.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <!-- Previous Button -->
+        {% if questions.has_previous %}
+            <li class="page-item">
+                <a class="page-link mx-1" href="?page={{ questions.previous_page_number }}&status={{ request.GET.status }}&subject={{ request.GET.subject }}" aria-label="Previous">
+                    <i class="feather-icon icon-chevron-left"></i>
+                </a>
+            </li>
+        {% endif %}
+
+        <!-- Display the first few pages -->
+        {% for num in questions.paginator.page_range %}
+            {% if num <= 3 or num > questions.paginator.num_pages|add:"-2" or num == questions.number or num == questions.number|add:"-1" or num == questions.number|add:"1" %}
+                <li class="page-item {% if questions.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&status={{ request.GET.status }}&subject={{ request.GET.subject }}">{{ num }}</a>
+                </li>
+            {% elif num == 4 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Button -->
+        {% if questions.has_next %}
+            <li class="page-item">
+                <a class="page-link mx-1" href="?page={{ questions.next_page_number }}&status={{ request.GET.status }}&subject={{ request.GET.subject }}" aria-label="Next">
+                    <i class="feather-icon icon-chevron-right"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+     
+    <!-- filter section end -->
+    </div>
+</section>
+<!-- content here -->
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<section class="mt-2 col-sm-12 col-lg-8 col-md-8 col-xxl-8">
+   <div class="container">
+      <h3 class="mb-4" style="color: #0aad0a;">Preview Notes for {{ subject.SubjectName }} ({{ class_level.LevelName }}) </h3>
+
+      {% if notes %}
+         <div class="row">
+            {% for note in notes %}
+       
+               <div class="col-md-3"> <!-- This creates a column for each book -->
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <img src="/media/{{ notes_image.Image }}" alt="" style="width: 100%;">
+                        <h5 class="card-title">{{ note.NotesName }}</h5>
+                        <div class="d-flex justify-content-between">
+                           <a href="{{ note.UploadFile.url }}" class="btn btn-primary btn-sm" target="_blank">
+                              <i class="bi bi-eye"></i> View File</a>
+                           <a href="{{ note.UploadFile.url }}" class="btn btn-success btn-sm" download>
+                              <i class="bi bi-download"></i> Download</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            {% endfor %}
+         </div>
+      {% else %}
+         <p>No books available at the moment.</p>
+      {% endif %}
+   </div>
+
+   <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+      <span>
+          Showing 
+          {{ notes.start_index }} to {{ notes.end_index }} of {{ notes.paginator.count }} entries
+      </span>
+      <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+              <!-- Previous Button -->
+              {% if notes.has_previous %}
+                  <li class="page-item">
+                      <a class="page-link mx-1" href="?page={{ notes.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                          Previous
+                      </a>
+                  </li>
+              {% else %}
+                  <li class="page-item disabled">
+                      <span class="page-link mx-1">Previous</span>
+                  </li>
+              {% endif %}
+      
+              <!-- Pagination Links -->
+              {% for num in notes.paginator.page_range %}
+                  {% if num <= 3 or num > notes.paginator.num_pages|add:"-2" or num == notes.number or num == notes.number|add:"-1" or num == notes.number|add:"1" %}
+                      <li class="page-item {% if notes.number == num %}active{% endif %}">
+                          <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                      </li>
+                  {% elif num == 4 or num == notes.paginator.num_pages|add:"-3" %}
+                      <li class="page-item disabled"><span class="page-link">...</span></li>
+                  {% endif %}
+              {% endfor %}
+      
+              <!-- Next Button -->
+              {% if notes.has_next %}
+                  <li class="page-item">
+                      <a class="page-link mx-1" href="?page={{ notes.next_page_number }}&query={{ query }}" aria-label="Next">
+                          Next
+                      </a>
+                  </li>
+              {% else %}
+                  <li class="page-item disabled">
+                      <span class="page-link mx-1">Next</span>
+                  </li>
+              {% endif %}
+          </ul>
+      </nav>
+   </div>
+</section>
+{% endblock %}
