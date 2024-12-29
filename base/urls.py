@@ -13,7 +13,7 @@ urlpatterns = [
     path("contact-us", views.Contact, name="contact"),
     path("view-answers", views.ViewAnswers, name="view_answers"),
     path("asked-questions", views.AskedQestions, name="asked_questions"),
-    path("view-asked-questions", views.ViewAskedQestions, name="view_asked_questions"),
+    path("view-asked-questions/<str:pk>/", views.ViewAskedQestions, name="view_asked_questions"),
     
     
     # path for students views resources
@@ -22,6 +22,7 @@ urlpatterns = [
     path("papers/<int:subject_id>/<int:class_level_id>/", views.papers_view, name="papers-list"),
     path("books/<int:subject_id>/<int:class_level_id>/", views.books_view, name="books-list"),
     path("videos/<int:subject_id>/<int:class_level_id>/", views.videos_view, name="videos-list"),
+    
     
 
     # path for classes and levels

@@ -8,26 +8,28 @@
           <div class="d-lg-flex justify-content-between align-items-center border-bottom pt-2 pb-2">
                 <div class="mb-3 mb-lg-0">
                    <p class="mb-0 pt-2 fs-3" style="color: #0aad0a;">
-                      Discuss how Proteins are digested to amino acids in Digestive System ?
+                     
+                      {{ask_questions.question_text}}
                    </p>
                 </div>
           </div>
        <div class="container mt-6">
           <div class="col-md-12">
              <div class="mb-10">
+
+               {% for answer in ask_questions.answers.all %}
                 <!-- loop start here -->
                 <div class="d-flex border-bottom pb-6 mb-6">
                    <div class="ms-5">
-                      <h6 class="mb-1">Answered by: Teacher Khamis Kotta</h6>
+                      <h6 class="mb-1">Answered by:{{ answer.answered_by.first_name }} {{ answer.answered_by.last_name }} </h6>
                       <!-- select option -->
                       <!-- content -->
                       <p class="small">
-                         <span class="">Answered on July 3, 2024 in </span>
-                         <span class="text-primary ms-1 fw-bold">BIOLOGY</span>
+                         <span class="">Answered on {{answer.created_at}} in </span>
+                         <span class="text-primary ms-1 fw-bold">{{ask_questions.subject}}</span>
                       </p>
                       <p>
-                         Product quality is good. But, weight seemed less than 1kg. Since it is being sent in open package, there is a possibility of pilferage in between.
-                         FreshCart sends the veggies and fruits through sealed plastic covers and Barcode on the weight etc. .
+                        {{answer.answer_text}}
                       </p>
                       <!-- icon -->
                       <div class="d-flex justify-content-end mt-4">
@@ -42,7 +44,13 @@
                       </div>
                    </div>
                 </div>
+                {% empty %}
+                <p>No answers yet.</p>
+                {% endfor %}
                 <!-- loop end here -->
+     
+
+
                 <div class="d-flex border-bottom mb-4">
                    <p class="text-dark">1 Answer(s)</p>
                 </div>
@@ -77,6 +85,8 @@
                                         <!-- icon -->
                                 </div>
                                 <hr>
+
+
                                 <!-- loop end here -->
                                 <div class="comment mb-4">
                                     <h6 class="mb-1">Commented by: Ally Thiago</h6>
@@ -92,6 +102,7 @@
                                         </p>
                                         <!-- icon -->
                                 </div>
+                                
                                 <hr>
                             </div>
                         </div>

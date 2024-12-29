@@ -326,29 +326,56 @@ class AskQuestion(models.Model):
     assignment = models.ForeignKey(AssignToClasses, on_delete=models.CASCADE, related_name="questions")
     question_text = models.TextField()
     is_answered = models.BooleanField(default=False)
+    views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     display_fields = ['student','assignment','question_text']
+
+    def increment_views(self):
+        self.views += 1
+        self.save()
+
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return f"Question by {self.student} for {self.assignment.Subject} in {self.assignment.School}"
 
-
+    
 class AnswerQuestion(models.Model):
-    question_ask = models.OneToOneField(AskQuestion, on_delete=models.CASCADE, related_name="answer")
+    question_ask = models.ForeignKey(
+        AskQuestion, 
+        on_delete=models.CASCADE, 
+        related_name="answers"
+    )
     answer_text = models.TextField()
-    answered_by = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'teacher'})
+    answered_by = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'role': 'teacher'}
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    display_fields = ['question_ask','answer_text','answered_by']
+    display_fields = ['question_ask', 'answer_text', 'answered_by']
+
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
         return f"Answer to {self.question_ask}"
 
+# class AnswerQuestion(models.Model):
+#     question_ask = models.OneToOneField(AskQuestion, on_delete=models.CASCADE, related_name="answers")
+#     answer_text = models.TextField()
+#     answered_by = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'teacher'})
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     display_fields = ['question_ask','answer_text','answered_by']
+#     class Meta:
+#         ordering = ['-created_at']
+
+#     def __str__(self):
+#         return f"Answer to {self.question_ask}"
 
 
 class Notification(models.Model):

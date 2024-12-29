@@ -183,20 +183,29 @@ def ViewAnswers(request):
 
 def AskedQestions(request):    
     sitename = "ASKED QUESTIONS | OPLAS TANZANIA"
-    page_name = 'Home'    
+    page_name = 'Home'
+
+    ask_questions = AskQuestion.objects.all()  
+
     context = {
         'sitename': sitename,
         'page_name': page_name,
+        'ask_questions': ask_questions,
     }
     
     return render(request, 'base/asked-questions.html', context)
 
-def ViewAskedQestions(request):    
+def ViewAskedQestions(request, pk):    
     sitename = "ASKED QUESTIONS | OPLAS TANZANIA"
-    page_name = 'Home'    
+    page_name = 'Home'  
+    ask_questions = AskQuestion.objects.get(id = pk)  
+ 
+
     context = {
         'sitename': sitename,
         'page_name': page_name,
+        'ask_questions': ask_questions,
+     
     }
     
     return render(request, 'base/view-asked-questions.html', context)
@@ -2397,3 +2406,6 @@ def answer_question_detail(request, pk):
  
 #==============> comment has errors user no object student exists
 #==============> PROBLEM video extend card , video loading is too much
+
+
+#==============> 24 for subject assigned allowed to send asked question but other year failed "No teacher assigned"
