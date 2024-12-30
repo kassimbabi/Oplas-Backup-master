@@ -11,7 +11,7 @@ urlpatterns = [
     path("", views.Home, name="home"),
     path("about-us", views.About, name="about"),
     path("contact-us", views.Contact, name="contact"),
-    path("view-answers", views.ViewAnswers, name="view_answers"),
+    path("view-answers/<str:pk>/", views.ViewAnswers, name="view_answers"),
     path("asked-questions", views.AskedQestions, name="asked_questions"),
     path("view-asked-questions/<str:pk>/", views.ViewAskedQestions, name="view_asked_questions"),
     

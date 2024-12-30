@@ -124,7 +124,7 @@
                         <span class="">Asked on {{ question.CreatedDate|date:"F j, Y" }} in </span>
                         <span class="text-primary ms-1 fw-bold">{{ question.SubjectName }}</span>
                     </p>
-                    <p><a href="{% url "view_answers" %}" class="text-dark fw-bold">{{ question.QuestionName }}</a></p>
+                    <p><a href="{% url "view_answers" question.id %}" class="text-dark fw-bold">{{ question.QuestionName }}</a></p>
 
                     <!-- Icons for Comments, Views, etc. -->
                     <div class="d-flex justify-content-start mt-4">

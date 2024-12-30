@@ -170,12 +170,23 @@ def Contact(request):
     
     return render(request, 'base/contact-us.html', context)
 
-def ViewAnswers(request):    
+def ViewAnswers(request, pk):    
     sitename = "ANSWERS | OPLAS TANZANIA"
-    page_name = 'Home'    
+    page_name = 'Home'  
+    
+    questions = Questions.objects.get(id = pk)
+    comments = Comments.objects.all()
+
+    content_type = ContentType.objects.get_for_model(Questions)
+
+    comment_count = Comments.objects.filter(content_type=content_type, object_id=pk).count()
+
     context = {
         'sitename': sitename,
         'page_name': page_name,
+        'questions': questions,
+        'comments': comments,
+        'comment_count': comment_count,
     }
     
     return render(request, 'base/view-answers.html', context)
@@ -2189,12 +2200,12 @@ def add_comments(request, question_id):
     question = Questions.objects.get(id=question_id)
     student = request.user.student
     
-    viewed_questions = request.session.get('viewed_questions', [])
+    # viewed_questions = request.session.get('viewed_questions', [])
     
-    if question.id not in viewed_questions:
-        question.increment_views() 
-        viewed_questions.append(question.id)  
-        request.session['viewed_questions'] = viewed_questions  
+    # if question.id not in viewed_questions:
+    #     question.increment_views() 
+    #     viewed_questions.append(question.id)  
+    #     request.session['viewed_questions'] = viewed_questions  
 
     if request.method == 'POST':
         comment_text = request.POST.get('commentText')
@@ -2203,23 +2214,18 @@ def add_comments(request, question_id):
         teacher = assign_teacher_to_comment(question, student)
 
         if teacher:
-           
+ 
             comment = Comments.objects.create(
-                question=question,
-                commentText=comment_text,
-                student=student,
-                teacher=teacher
-            )
-            
-            return redirect('add-comment', question_id=question.id)
+            content_type=ContentType.objects.get_for_model(Questions),
+            object_id=question.id,
+            commentText=comment_text,
+            student=student,
+            teacher=teacher
+
+           ) 
+        return redirect('view_answers', pk= question.id)
          
-    conetext = {
-        'sitename': sitename,
-        'page_name': page_name,
-        'question': question,
-        'comments': Comments.objects.filter(question=question),
-}
-    return render(request, 'base/comments.html', conetext)
+
 
 def add_askQustion_comments(request, ask_question_id):
     sitename = "Comments | Oplas Tanzania"
@@ -2246,22 +2252,7 @@ def add_askQustion_comments(request, ask_question_id):
 
            ) 
         return redirect('view_asked_questions', pk= question.id)
-            # comment = Comments.objects.create(
-            #     question=question,
-            #     commentText=comment_text,
-            #     student=student,
-            #     teacher=teacher
-            # )
-            
-            # return redirect('add-comment', question_id=question.id)
-         
-#     conetext = {
-#         'sitename': sitename,
-#         'page_name': page_name,
-#         'question': question,
-#         'comments': Comments.objects.filter(question=question),
-# }
-#     return render(request, 'base/comments.html', conetext)
+
 
 @login_required(login_url='home')
 def backend_comments(request):
@@ -2337,6 +2328,7 @@ def delete_comments(request, pk):
     return redirect(f"{reverse('backend-comments')}?page={current_page}&query={query}")
 
 @login_required(login_url='home')
+@login_required(login_url='home')
 def ask_question(request):
     if request.method == 'POST':
 
@@ -2353,14 +2345,18 @@ def ask_question(request):
             messages.error(request, "The selected subject does not exist.")
             return redirect('error_page')
 
-
         try:
             student_class = request.user.student.className
         except ObjectDoesNotExist:
             messages.error(request, "You are not associated with any class.")
             return redirect('home')
 
-      
+        try:
+            level_name = student_class.SchoolLevel  
+        except AttributeError:
+            messages.error(request, "The class is not associated with a valid level.")
+            return redirect('error_page')
+
         assignment = AssignToClasses.objects.filter(
             School=student_class,
             Subject=subject
@@ -2370,16 +2366,15 @@ def ask_question(request):
             messages.error(request, "No teacher is assigned to this subject for your class.")
             return redirect('error_page')
 
-
         ask_question = AskQuestion.objects.create(
             student=request.user,
-            subjectName=subject,
+            SubjectName=subject,
+            LevelName=level_name,
             class_name=student_class,
             assignment=assignment,
             question_text=question_text,
             is_answered=False
         )
-
 
         Notification.objects.create(
             user=assignment.Teacher.user,
@@ -2391,6 +2386,7 @@ def ask_question(request):
         return redirect('home')
 
     return render(request, 'error.html')
+
 
 
 
