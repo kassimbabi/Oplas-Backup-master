@@ -14,7 +14,7 @@
                     <h6 class="mb-1">Asked by: {{ask_question.student.first_name}} {{ask_question.student.last_name}}</h6>
                     <p class="small">
                         <span class="">Asked on {{ask_question.created_at}} in </span>
-                        <span class="text-primary ms-1 fw-bold">{{ask_question.subject.SubjectName}}</span>
+                        <span class="text-primary ms-1 fw-bold">{{ask_question.SubjectName.SubjectName}}</span>
                     </p>
                     <p><a href="{% url "view_asked_questions" ask_question.id %}" class="text-dark fw-bold">{{ask_question.question_text}}</a></p>
 

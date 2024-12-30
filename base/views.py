@@ -113,31 +113,30 @@ def Home(request):
     sitename = "HOME | OPLAS TANZANIA"
     page_name = 'Home'
     
-    # Get the selected status from the query parameters
-    status = request.GET.get('status', '')  # Default to empty if not provided
+    status = request.GET.get('status', '')  
 
-    # Get the selected subject from the query parameters
-    selected_subject = request.GET.get('subject', '')  # Default to empty if not provided
+    
+    selected_subject = request.GET.get('subject', '')  
 
-    # Start with all questions
+    
     questions = Questions.objects.all()
 
-    # Filter questions based on the selected status
+  
     if status == 'answered':
-        questions = questions.filter(answers__isnull=False)  # Questions with answers
+        questions = questions.filter(answers__isnull=False) 
     elif status == 'unanswered':
-        questions = questions.filter(answers__isnull=True)  # Questions without answers
+        questions = questions.filter(answers__isnull=True) 
 
-    # Filter questions based on the selected subject if provided
+    
     if selected_subject:
         questions = questions.filter(SubjectName_id=selected_subject)
 
-    # Paginate questions
-    paginator = Paginator(questions, 5)  # Display 5 questions per page
+  
+    paginator = Paginator(questions, 5)  
     page_number = request.GET.get('page')
     questions_page = paginator.get_page(page_number)
 
-    # Fetch all subjects for the dropdown
+  
     subjects = Subjects.objects.all()
 
     context = {
@@ -185,7 +184,22 @@ def AskedQestions(request):
     sitename = "ASKED QUESTIONS | OPLAS TANZANIA"
     page_name = 'Home'
 
-    ask_questions = AskQuestion.objects.all()  
+    try:
+        if not request.user.is_authenticated:
+            return redirect('home')  
+
+        student = Students.objects.get(user=request.user)
+    except Students.DoesNotExist:
+        return redirect('home') 
+    
+    student_level_order = student.schoolLevel.level_order
+
+
+    ask_questions = AskQuestion.objects.filter(
+    LevelName__level_order__lte=student_level_order
+)
+
+    
 
     context = {
         'sitename': sitename,
@@ -197,14 +211,21 @@ def AskedQestions(request):
 
 def ViewAskedQestions(request, pk):    
     sitename = "ASKED QUESTIONS | OPLAS TANZANIA"
-    page_name = 'Home'  
+    page_name = 'Home' 
+
     ask_questions = AskQuestion.objects.get(id = pk)  
+    comments = Comments.objects.all()
  
+    content_type = ContentType.objects.get_for_model(AskQuestion)
+
+    comment_count = Comments.objects.filter(content_type=content_type, object_id=pk).count()
 
     context = {
         'sitename': sitename,
         'page_name': page_name,
         'ask_questions': ask_questions,
+        'comments':comments,
+        'comment_count': comment_count,
      
     }
     
@@ -2164,6 +2185,7 @@ def delete_answers(request, pk):
 def add_comments(request, question_id):
     sitename = "Comments | Oplas Tanzania"
     page_name = 'Comments'
+
     question = Questions.objects.get(id=question_id)
     student = request.user.student
     
@@ -2198,6 +2220,48 @@ def add_comments(request, question_id):
         'comments': Comments.objects.filter(question=question),
 }
     return render(request, 'base/comments.html', conetext)
+
+def add_askQustion_comments(request, ask_question_id):
+    sitename = "Comments | Oplas Tanzania"
+    page_name = 'Comments'
+
+    question = AskQuestion.objects.get(id=ask_question_id)
+    student = request.user.student
+     
+
+    if request.method == 'POST':
+        comment_text = request.POST.get('commentText')
+        
+        
+        teacher = assign_teacher_to_comment(question, student)
+
+        if teacher:
+            
+            comment = Comments.objects.create(
+            content_type=ContentType.objects.get_for_model(AskQuestion),
+            object_id=question.id,
+            commentText=comment_text,
+            student=student,
+            teacher=teacher
+
+           ) 
+        return redirect('view_asked_questions', pk= question.id)
+            # comment = Comments.objects.create(
+            #     question=question,
+            #     commentText=comment_text,
+            #     student=student,
+            #     teacher=teacher
+            # )
+            
+            # return redirect('add-comment', question_id=question.id)
+         
+#     conetext = {
+#         'sitename': sitename,
+#         'page_name': page_name,
+#         'question': question,
+#         'comments': Comments.objects.filter(question=question),
+# }
+#     return render(request, 'base/comments.html', conetext)
 
 @login_required(login_url='home')
 def backend_comments(request):
@@ -2309,7 +2373,7 @@ def ask_question(request):
 
         ask_question = AskQuestion.objects.create(
             student=request.user,
-            subject=subject,
+            subjectName=subject,
             class_name=student_class,
             assignment=assignment,
             question_text=question_text,

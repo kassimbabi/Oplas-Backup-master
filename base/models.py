@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from datetime import date
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 # from ckeditor.fields import RichTextField//
 
 # Create your models here.
@@ -102,7 +104,7 @@ class Teachers(models.Model):
 
 class SchoolLevels(models.Model):
     LevelName = models.CharField(max_length=100, verbose_name='Level Name')
-    level_order = models.IntegerField(unique=True, verbose_name='Level Order')  # Add this field
+    level_order = models.IntegerField(unique=True, verbose_name='Level Order')  
     CreatedDate = models.DateTimeField(auto_now_add=True, verbose_name='Create Date')
     ModifiedDate = models.DateTimeField(auto_now=True, verbose_name='Modified Date')
     display_fields = ['LevelName','CreatedDate','ModifiedDate']
@@ -289,27 +291,6 @@ class Notes(models.Model):
         
 
 
-class Comments(models.Model):
-    question = models.ForeignKey(Questions, on_delete=models.CASCADE, verbose_name='Question', related_name='comments')
-    commentText = models.TextField()
-    student = models.ForeignKey(Students, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE, null=True, blank=True) 
-    teacherReply = models.TextField(null=True, blank=True)
-    replyDate = models.DateTimeField(null=True, blank=True)
-    isApproved = models.BooleanField(default=False)  
-    createdDate = models.DateTimeField(auto_now_add=True)
-
-    display_fields = ['question', 'commentText', 'student', 'teacher', 'createdDate', 'isApproved']
-
-    def __str__(self):
-        return f"Comment by {self.student} on {self.question}"
-
-    class Meta:
-        ordering = ['-createdDate']
-
-
-
-
 class Videos(models.Model):
     VideosName = models.CharField(max_length=100, verbose_name='Videos Name')
     SubjectName = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Subject Name')
@@ -321,7 +302,8 @@ class Videos(models.Model):
     
 class AskQuestion(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="questions", limit_choices_to={'role': 'student'})
-    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, related_name="asked_questions")
+    SubjectName = models.ForeignKey(Subjects, on_delete=models.CASCADE, related_name="asked_questions")
+    LevelName = models.ForeignKey(SchoolLevels, on_delete=models.CASCADE, verbose_name='Level Name')
     class_name = models.ForeignKey(SchoolClases, on_delete=models.CASCADE, related_name="asked_questions")
     assignment = models.ForeignKey(AssignToClasses, on_delete=models.CASCADE, related_name="questions")
     question_text = models.TextField()
@@ -376,6 +358,46 @@ class AnswerQuestion(models.Model):
 
 #     def __str__(self):
 #         return f"Answer to {self.question_ask}"
+
+
+# class Comments(models.Model):
+#     question = models.ForeignKey(Questions, on_delete=models.CASCADE, verbose_name='Question', related_name='comments')
+#     commentText = models.TextField()
+#     student = models.ForeignKey(Students, on_delete=models.CASCADE)
+#     teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE, null=True, blank=True) 
+#     teacherReply = models.TextField(null=True, blank=True)
+#     replyDate = models.DateTimeField(null=True, blank=True)
+#     isApproved = models.BooleanField(default=False)  
+#     createdDate = models.DateTimeField(auto_now_add=True)
+
+#     display_fields = ['question', 'commentText', 'student', 'teacher', 'createdDate', 'isApproved']
+
+#     def __str__(self):
+#         return f"Comment by {self.student} on {self.question}"
+
+#     class Meta:
+#         ordering = ['-createdDate']
+
+
+class Comments(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    question = GenericForeignKey('content_type', 'object_id')
+    
+    commentText = models.TextField()
+    student = models.ForeignKey(Students, on_delete=models.CASCADE, null=True, blank=True)
+    teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE, null=True, blank=True)
+    teacherReply = models.TextField(null=True, blank=True)
+    replyDate = models.DateTimeField(null=True, blank=True)
+    isApproved = models.BooleanField(default=False)
+    createdDate = models.DateTimeField(auto_now_add=True)
+    display_fields = ['question', 'commentText', 'student', 'teacher', 'createdDate', 'isApproved']
+
+    def __str__(self):
+        return f"Comment by {self.student} on {self.question}"
+
+    class Meta:
+        ordering = ['-createdDate']
 
 
 class Notification(models.Model):

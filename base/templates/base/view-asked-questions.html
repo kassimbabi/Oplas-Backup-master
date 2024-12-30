@@ -9,7 +9,7 @@
                 <div class="mb-3 mb-lg-0">
                    <p class="mb-0 pt-2 fs-3" style="color: #0aad0a;">
                      
-                      {{ask_questions.question_text}}
+                      {{ask_questions.question_text}} 
                    </p>
                 </div>
           </div>
@@ -26,7 +26,7 @@
                       <!-- content -->
                       <p class="small">
                          <span class="">Answered on {{answer.created_at}} in </span>
-                         <span class="text-primary ms-1 fw-bold">{{ask_questions.subject}}</span>
+                         <span class="text-primary ms-1 fw-bold">{{ask_questions.SubjectName}}</span>
                       </p>
                       <p>
                         {{answer.answer_text}}
@@ -64,55 +64,42 @@
                                 <span class="me-2">
                                     <i class="bi bi-plus-circle" id="comment-icon"></i>
                                 </span>
-                                1 Comment(s)
+                                {{ comment_count }} Comment(s)
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#commentAccordion">
                             <div class="accordion-body">
+
                                 <!-- loop start here -->
+                                {% for comment in comments %}
+                                {% if comment.content_type.model == "askquestion" %}
                                 <div class="comment mb-4">
-                                    <h6 class="mb-1">Commented by: Ally Thiago</h6>
+                                    <h6 class="mb-1">Commented by: {{ comment.student.firstName }} {{ comment.student.lastName }}</h6>
                                         <!-- select option -->
                                         <!-- content -->
                                         <p class="small">
-                                            <span class="">Answered on July 3, 2024 in </span>
-                                            <span class="text-primary ms-1 fw-bold">BIOLOGY</span>
+                                            <span class="text-primary ms-1 fw-bold">Commented on {{comment.createdDate}} </span>
+                                            {% comment %} <span class="text-primary ms-1 fw-bold">{{comment.SubjectName.SubjectName}}</span> {% endcomment %}
                                         </p>
                                         <p>
-                                            Product quality is good. But, weight seemed less than 1kg. Since it is being sent in open package, there is a possibility of pilferage in between.
-                                            FreshCart sends the veggies and fruits through sealed plastic covers and Barcode on the weight etc. .
+                                          {{comment.commentText}}
                                         </p>
                                         <!-- icon -->
                                 </div>
                                 <hr>
+                                {% endif %}
+                                {% endfor %}
 
-
-                                <!-- loop end here -->
-                                <div class="comment mb-4">
-                                    <h6 class="mb-1">Commented by: Ally Thiago</h6>
-                                        <!-- select option -->
-                                        <!-- content -->
-                                        <p class="small">
-                                            <span class="">Answered on July 3, 2024 in </span>
-                                            <span class="text-primary ms-1 fw-bold">BIOLOGY</span>
-                                        </p>
-                                        <p>
-                                            Product quality is good. But, weight seemed less than 1kg. Since it is being sent in open package, there is a possibility of pilferage in between.
-                                            FreshCart sends the veggies and fruits through sealed plastic covers and Barcode on the weight etc. .
-                                        </p>
-                                        <!-- icon -->
-                                </div>
-                                
-                                <hr>
                             </div>
                         </div>
                     </div>
                     
-                <form>
+                <form method = 'POST' action = '{% url "add-ask-question-comment" ask_questions.id %}'>
+                  {% csrf_token %}
                    <div class="mb-3 col-lg-12 mt-5">
                       <div class="mb-3">
                          <label class="form-label">Comment Here</label>
-                         <textarea class="form-control" rows="20" placeholder="Comment your answer"></textarea>
+                         <textarea class="form-control" name = 'commentText' rows="20" placeholder="Comment your answer"></textarea>
                       </div>
                    </div>
                    <div class="col-lg-12">

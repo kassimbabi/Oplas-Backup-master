@@ -109,6 +109,8 @@ urlpatterns = [
     path('approve/comment/<int:comment_id>/', views.approve_comment, name='approve-comment'),
     path('backend/comments', views.backend_comments, name='backend-comments'),
     path('delete/comment/<int:pk>/', views.delete_comments, name='delete-comment' ),
+    path('add/ask/question/comment/<int:ask_question_id>/', views.add_askQustion_comments, name='add-ask-question-comment'),
+
     
     # path for manage asking questions
     path('ask/question', views.ask_question, name='ask-question'),
