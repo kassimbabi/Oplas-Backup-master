@@ -2398,6 +2398,7 @@ def ask_question(request):
             Subject=subject
         ).first()
 
+
         if not assignment:
             messages.error(request, "No teacher is assigned to this subject for your class.")
             return redirect('home')
