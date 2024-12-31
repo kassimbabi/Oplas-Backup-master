@@ -32,7 +32,52 @@
         </div>
         {% endfor %}
         <!-- loop end here -->
-
+        <div class="border-top d-md-flex justify-content-between align-items-center px-6 py-6">
+            <span>
+                Showing 
+                {{ ask_questions.start_index }} to {{ ask_questions.end_index }} of {{ ask_questions.paginator.count }} entries
+            </span>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous Button -->
+                    {% if ask_questions.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link mx-1" href="?page={{ ask_questions.previous_page_number }}&query={{ query }}" aria-label="Previous">
+                                Previous
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link mx-1">Previous</span>
+                        </li>
+                    {% endif %}
+            
+                    <!-- Pagination Links -->
+                    {% for num in ask_questions.paginator.page_range %}
+                        {% if num <= 3 or num > ask_questions.paginator.num_pages|add:"-2" or num == ask_questions.number or num == ask_questions.number|add:"-1" or num == ask_questions.number|add:"1" %}
+                            <li class="page-item {% if ask_questions.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a>
+                            </li>
+                        {% elif num == 4 or num == ask_questions.paginator.num_pages|add:"-3" %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    <!-- Next Button -->
+                    {% if ask_questions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link mx-1" href="?page={{ ask_questions.next_page_number }}&query={{ query }}" aria-label="Next">
+                                Next
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link mx-1">Next</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
 
     </div>
 </div>

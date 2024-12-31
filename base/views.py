@@ -175,11 +175,24 @@ def ViewAnswers(request, pk):
     page_name = 'Home'  
     
     questions = Questions.objects.get(id = pk)
-    comments = Comments.objects.all()
 
     content_type = ContentType.objects.get_for_model(Questions)
 
     comment_count = Comments.objects.filter(content_type=content_type, object_id=pk).count()
+
+    comments = Comments.objects.filter(
+        content_type=content_type,
+        object_id=questions.id
+    )
+         # Set up pagination
+    paginator = Paginator(comments, 5)  # Show 10 students per page
+    page_number = request.GET.get('page')
+    try:
+        comments = paginator.page(page_number)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
 
     context = {
         'sitename': sitename,
@@ -210,7 +223,15 @@ def AskedQestions(request):
     LevelName__level_order__lte=student_level_order
 )
 
-    
+    # Set up pagination
+    paginator = Paginator(ask_questions, 5)  # Show 10 students per page
+    page_number = request.GET.get('page')
+    try:
+        ask_questions = paginator.page(page_number)
+    except PageNotAnInteger:
+        ask_questions = paginator.page(1)
+    except EmptyPage:
+        ask_questions = paginator.page(paginator.num_pages)
 
     context = {
         'sitename': sitename,
@@ -225,11 +246,26 @@ def ViewAskedQestions(request, pk):
     page_name = 'Home' 
 
     ask_questions = AskQuestion.objects.get(id = pk)  
-    comments = Comments.objects.all()
+    
  
     content_type = ContentType.objects.get_for_model(AskQuestion)
 
     comment_count = Comments.objects.filter(content_type=content_type, object_id=pk).count()
+
+    comments = Comments.objects.filter(
+        content_type=content_type,
+        object_id=ask_questions.id
+    )
+
+     # Set up pagination
+    paginator = Paginator(comments, 5)  # Show 10 students per page
+    page_number = request.GET.get('page')
+    try:
+        comments = paginator.page(page_number)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
 
     context = {
         'sitename': sitename,
@@ -2337,13 +2373,13 @@ def ask_question(request):
 
         if not subject_id or not question_text:
             messages.error(request, "Subject or question text cannot be empty.")
-            return redirect('error_page')
+            return redirect('home')
 
         try:
             subject = Subjects.objects.get(id=subject_id)
         except Subjects.DoesNotExist:
             messages.error(request, "The selected subject does not exist.")
-            return redirect('error_page')
+            return redirect('home')
 
         try:
             student_class = request.user.student.className
@@ -2355,7 +2391,7 @@ def ask_question(request):
             level_name = student_class.SchoolLevel  
         except AttributeError:
             messages.error(request, "The class is not associated with a valid level.")
-            return redirect('error_page')
+            return redirect('home')
 
         assignment = AssignToClasses.objects.filter(
             School=student_class,
@@ -2364,7 +2400,7 @@ def ask_question(request):
 
         if not assignment:
             messages.error(request, "No teacher is assigned to this subject for your class.")
-            return redirect('error_page')
+            return redirect('home')
 
         ask_question = AskQuestion.objects.create(
             student=request.user,
@@ -2383,7 +2419,7 @@ def ask_question(request):
         )
 
         messages.success(request, "Your question has been sent to the teacher.")
-        return redirect('home')
+        return redirect('asked_questions')
 
     return render(request, 'error.html')
 
