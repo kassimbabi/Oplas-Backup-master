@@ -321,7 +321,7 @@ class AskQuestion(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Question by {self.student} for {self.assignment.SubjectName} in {self.assignment.School}"
+        return f"Question by {self.student} for {self.assignment.Subject} in {self.assignment.School}"
 
     
 class AnswerQuestion(models.Model):
