@@ -1436,20 +1436,18 @@ def AddQuestions(request):
 def edit_question(request, pk):
     question = Questions.objects.get( pk=pk)
     
-    if request.method == 'POST':
-       
+    if request.method == 'POST':          
         QuestionName = request.POST.get('questionName')  
-        QuestionBy_id = request.POST.get('questionBy') 
         LevelName_id = request.POST.get('levelName')  
         SubjectName_id = request.POST.get('subjectName') 
-        IsApproved = request.POST.get('isApproved') == 'True'  
-        ApprovedBy_id = request.POST.get('approvedBy')  
-        
+
+        IsApproved = 'True'  
+        ApprovedBy = request.user.teacher 
+        QuestionBy = request.user.teacher
         
         LevelName = SchoolLevels.objects.get(id=LevelName_id)
         SubjectName = Subjects.objects.get(id=SubjectName_id)
-        QuestionBy = WhoPosts.objects.get(id=QuestionBy_id)
-        ApprovedBy = Teachers.objects.get(id=ApprovedBy_id)
+        
         
         question.QuestionName = QuestionName
         question.QuestionBy = QuestionBy

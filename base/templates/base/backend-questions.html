@@ -104,19 +104,8 @@
                                           <input id="editQuestionName{{ question.id }}" type="text" class="form-control" name="questionName" value="{{ question.QuestionName }}" required="">
                                           <div class="invalid-feedback">Please enter question name.</div>
                                        </div>
+
                                        <div class="row">
-                                        <div class="mb-3 col-12 col-md-6">
-                                            <label for="editQuestionBy{{ question.id }}" class="form-label">Question By</label>
-                                            <select class="form-select" id="editQuestionBy{{ question.id }}" name="questionBy" required="">
-                                                  <option value="" disabled>Select Question By</option>
-                                                  {% for who_post in who_posts %}
-                                                     <option value="{{ who_post.id }}" {% if who_post.id == question.QuestionBy.id %}selected{% endif %}>
-                                                        {{ who_post.PostedBy }}
-                                                     </option>
-                                                  {% endfor %}
-                                            </select>
-                                            <div class="invalid-feedback">Please select who posted the question.</div>
-                                         </div>
   
                                          <div class="mb-3 col-12 col-md-6">
                                             <label for="editLevelName{{ question.id }}" class="form-label">Level Name</label>
@@ -144,29 +133,6 @@
                                                   {% endfor %}
                                             </select>
                                             <div class="invalid-feedback">Please select a subject.</div>
-                                         </div>
-  
-                                         <div class="mb-3 col-12 col-md-4">
-                                            <label for="editIsApproved{{ question.id }}" class="form-label">Is Approved</label>
-                                            <select class="form-select" id="editIsApproved{{ question.id }}" name="isApproved" required="">
-                                                  <option value="" disabled>Select Approval Status</option>
-                                                  <option value="True" {% if question.IsApproved %}selected{% endif %}>Yes</option>
-                                                  <option value="False" {% if not question.IsApproved %}selected{% endif %}>No</option>
-                                            </select>
-                                            <div class="invalid-feedback">Please select approval status.</div>
-                                         </div>
-  
-                                         <div class="mb-3 col-12 col-md-4">
-                                            <label for="editApprovedBy{{ question.id }}" class="form-label">Approved By</label>
-                                            <select class="form-select" id="editApprovedBy{{ question.id }}" name="approvedBy" required="">
-                                                  <option value="" disabled>Select Approved By</option>
-                                                  {% for teacher in teachers %}
-                                                     <option value="{{ teacher.id }}" {% if teacher.id == question.ApprovedBy.id %}selected{% endif %}>
-                                                        {{ teacher.firstName }} {{ teacher.lastName }}
-                                                     </option>
-                                                  {% endfor %}
-                                            </select>
-                                            <div class="invalid-feedback">Please select who approved the question.</div>
                                          </div>
                                        </div>
                                        <div class="col-md-6 col-12">
