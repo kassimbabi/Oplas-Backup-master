@@ -177,11 +177,11 @@ class WhoPosts(models.Model):
 
 class Questions(models.Model):
     QuestionName = models.TextField(verbose_name='Question Name')
-    QuestionBy = models.ForeignKey(WhoPosts, on_delete=models.CASCADE, verbose_name='Question By')
+    QuestionBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, related_name='questionby', verbose_name='Question By')
     LevelName = models.ForeignKey(SchoolLevels, on_delete=models.CASCADE, verbose_name='Level Name')
     SubjectName = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Subject Name')
     IsApproved = models.BooleanField(verbose_name='Is Approved')
-    ApprovedBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, verbose_name='Approved By')
+    ApprovedBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, related_name= 'approvedby', verbose_name='Approved By')
     views = models.PositiveIntegerField(default=0)
     CreatedDate = models.DateTimeField(auto_now_add=True, verbose_name='Create Date')
     ModifiedDate = models.DateTimeField(auto_now=True, verbose_name='Modified Date')
@@ -200,10 +200,10 @@ class Questions(models.Model):
 
 class Answers(models.Model):
     QuestionName = models.ForeignKey(Questions, related_name='answers', on_delete=models.CASCADE, verbose_name='Question Name')
-    AnswerBy = models.ForeignKey(WhoPosts, on_delete=models.CASCADE, verbose_name='Answer By')
+    AnswerBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, related_name= 'answerby' , verbose_name='Answer By')
     Answer = models.TextField(verbose_name='Answer')
     IsApproved = models.BooleanField(verbose_name='Is Approved')
-    ApprovedBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, verbose_name='Approved By')
+    ApprovedBy = models.ForeignKey(Teachers, on_delete=models.CASCADE, related_name='approveby', verbose_name='Approved By')
     CreatedDate = models.DateTimeField(auto_now_add=True, verbose_name='Create Date')
     ModifiedDate = models.DateTimeField(auto_now=True, verbose_name='Modified Date')
     display_fields = ['QuestionName','Answer','IsApproved','ApprovedBy','CreatedDate','ModifiedDate']

@@ -59,8 +59,13 @@ urlpatterns = [
     path('edit/student/<int:pk>/', views.edit_student, name='edit-student'),
     path('delete/student/<int:pk>/', views.delete_student, name='delete-student'),
     
-    
-    
+    #path for manage assignments
+    path('assign/class', views.BackendAssign, name= 'assing-to-class'),
+    path('filter-subjects/', views.filter_subjects, name='filter_subjects'),
+    path('assign/class/create', views.assign_to_class_create, name = 'assign-to-class-create'),
+    path('assgn/class/update/<int:pk>/', views.assign_to_class_update, name='assign-to-class-update'),
+    path('assign/class/delete/<int:pk>/', views.assign_to_class_delete, name='assign-to-class-delete'),
+
     # path for manage questions
     path("backend-questions", views.BackendQuestions, name="backend_questions"),
     path("add/question", views.AddQuestions, name="add-questions"),

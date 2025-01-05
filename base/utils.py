@@ -26,3 +26,5 @@ def assign_teacher_to_comment(question, student):
     teacher = assignment.Teacher if assignment else None
     
     return teacher
+
+

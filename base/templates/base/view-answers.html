@@ -37,7 +37,7 @@
                          </a>
                          <a href="#" class="ms-4">
                             <i class="bi bi-eye me-2"></i>
-                            500
+                            {{ question.views }}
                          </a>
                       </div>
                    </div>
@@ -48,9 +48,9 @@
                 <!-- loop end here -->
 
 
-                <div class="d-flex border-bottom">
+                {% comment %} <div class="d-flex border-bottom">
                    <p class="text-dark">1 Answer(s)</p>
-                </div>
+                </div> {% endcomment %}
                 <!-- Comments Accordion Section -->
                 <div class="accordion" id="commentAccordion">
                     <!-- Accordion Item 1 -->

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
@@ -172,8 +173,10 @@ def Contact(request):
 
 def ViewAnswers(request, pk):    
     sitename = "ANSWERS | OPLAS TANZANIA"
-    page_name = 'Home'  
-    
+    page_name = 'Home' 
+
+
+
     questions = Questions.objects.get(id = pk)
 
     content_type = ContentType.objects.get_for_model(Questions)
@@ -193,6 +196,13 @@ def ViewAnswers(request, pk):
         comments = paginator.page(1)
     except EmptyPage:
         comments = paginator.page(paginator.num_pages)
+
+    viewed_questions = request.session.get('viewed_questions', [])
+    
+    if questions.id not in viewed_questions:
+        questions.increment_views() 
+        viewed_questions.append(questions.id)  
+        request.session['viewed_questions'] = viewed_questions 
 
     context = {
         'sitename': sitename,
@@ -1111,7 +1121,7 @@ def edit_student(request, pk):
             'school_classes': SchoolClases.objects.all(),
             'statuses': Statuses.objects.all(),
         }
-        return render(request, 'students/students.html', context)
+        return render(request, 'base/students.html', context)
 
 
 # Function to handle deleting a student
@@ -1127,16 +1137,140 @@ def delete_student(request, pk):
 # Function to handle managing  students ending here
 
 
+@login_required(login_url='home')
+def BackendAssign(request):
+    sitename = "ASSIGN CLASS | OPLAS TANZANIA "
+    page_name = "Asssign"
+    assignments = AssignToClasses.objects.all()
+    teachers = Teachers.objects.all()
+    schools = SchoolClases.objects.all()
+    subjects = Subjects.objects.all()
+    statuses = Statuses.objects.all()
+
+    # Handle search query
+    query = request.GET.get('q', '')
+    if query:
+        assignments = AssignToClasses.objects.filter(
+            Q(Teacher__firstName__icontains=query) |
+            Q(Teacher__lastName__icontains=query) |
+            Q(School__ClassName__icontains=query) |  
+            Q(Subject__SubjectName__icontains=query)   
+        )
+    else:
+        assignments = AssignToClasses.objects.all()
+    
+           # Set up pagination
+    paginator = Paginator(assignments, 10)  
+    page_number = request.GET.get('page')
+    try:
+        assignments = paginator.page(page_number)
+    except PageNotAnInteger:
+        assignments = paginator.page(1)
+    except EmptyPage:
+        assignments = paginator.page(paginator.num_pages)
+
+    context = {
+        'sitename': sitename,
+        'page_name': page_name,
+        'assignments' : assignments,
+        'teachers': teachers,
+        'schools': schools,
+        'subjects': subjects,
+        'statuses': statuses,
+    }
+    return render (request , 'base/assign-to-class.html', context)
+
+def filter_subjects(request):
+    class_id = request.GET.get('class_id')
+    assigned_subjects = AssignToClasses.objects.filter(School_id=class_id).values_list('Subject_id', flat=True)
+    available_subjects = Subjects.objects.exclude(id__in=assigned_subjects)
+    
+    subjects_data = list(available_subjects.values('id', 'SubjectName'))  # 'SubjectName' matches your model field
+    return JsonResponse({'subjects': subjects_data})  # Remove the trailing comma
+
+
+
+def assign_to_class_create(request):
+    if request.method == 'POST':
+        teacher_id = request.POST.get('Teacher')
+        school_id = request.POST.get('School')
+        subject_id = request.POST.get('Subject')
+        status_id = request.POST.get('Status')
+
+        teacher = Teachers.objects.get(id=teacher_id)
+        school = SchoolClases.objects.get(id = school_id)
+        subjects = Subjects.objects.get(id = subject_id)
+        status= Statuses.objects.get(id = status_id)
+
+
+        if teacher_id and school_id and subject_id and status_id:
+            AssignToClasses.objects.create(
+                Teacher=teacher,
+                School=school,
+                Subject=subjects,
+                Status=status
+            )
+            messages.success(request, "Assignment created successfully!")
+            return redirect('assing-to-class')
+        
+        else:
+            messages.error(request, "All fields are required!")
+        
+        return redirect('assing-to-class')
+
+
+def assign_to_class_update(request, pk):
+    assignment = AssignToClasses.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        teacher_id = request.POST.get('Teacher')
+        school_id = request.POST.get('School')
+        subject_id = request.POST.get('Subject')
+        status_id = request.POST.get('Status')
+        
+
+        if teacher_id and school_id and subject_id and status_id:
+            assignment.Teacher_id = teacher_id
+            assignment.School_id = school_id
+            assignment.Subject_id = subject_id
+            assignment.Status_id = status_id
+            assignment.save()
+            messages.success(request, "Assignment updated successfully!")
+        else:
+            messages.error(request, "All fields are required!")
+
+        return redirect('assing-to-class')
+    
+
+def assign_to_class_delete(request, pk):
+    current_page = request.GET.get('page', 1)
+    query = request.GET.get('query', '')
+
+    assignment = AssignToClasses.objects.get(pk=pk)
+    assignment.delete()
+
+    messages.success(request, "Assignment deleted successfully!")
+    return redirect(f"{reverse('assing-to-class')}?page={current_page}&query={query}")
+
+
 # Function to handle managing questions starting from here
 @login_required(login_url='home')
 def BackendQuestions(request):    
     sitename = "QUESTIONS | OPLAS TANZANIA"
     page_name = 'BackendQuestions'
     questions = Questions.objects.all()
-    subjects = Subjects.objects.all()
-    levels = SchoolLevels.objects.all()
-    who_posts = WhoPosts.objects.all()
+    who_posts = Teachers.objects.all()
     teachers = Teachers.objects.all()
+    
+    teacher_id = request.user.teacher.id 
+
+    subjects = Subjects.objects.filter(
+    id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+)
+  
+    levels = SchoolLevels.objects.filter(
+    id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+)
     
     # Handle search query
     query = request.GET.get('q', '')
@@ -1184,9 +1318,6 @@ def AddQuestions(request):
     page_name = "Questions"
     icon = "fa fa-dashboard"
 
-    # Fetch all question-related data
-    questions = Questions.objects.all()
-    
     # Handle form submission for CSV file upload
     if request.method == 'POST':
         if 'csv_file' in request.FILES:
@@ -1202,37 +1333,24 @@ def AddQuestions(request):
                 # Process each row in the CSV
                 for row in reader:
                     try:
-                        # Ensure required fields are present and strip any extra whitespace
+                        # Extract fields from the CSV row
                         question_name = row.get('QuestionName', '').strip()
-                        question_by_id = row.get('QuestionBy', '').strip()
                         level_name_id = row.get('LevelName', '').strip()
                         subject_name_id = row.get('SubjectName', '').strip()
-                        approved_by_id = row.get('ApprovedBy', '').strip()
-                        is_approved = row.get('Approved', '').strip().lower() in ['true', 'yes', '1']
 
-                        # Validate that all required fields have values and are not empty
+                        # Validate that all required fields are present
                         if not question_name:
                             raise ValueError("Question Name is required and cannot be empty.")
-                        if not question_by_id:
-                            raise ValueError("Question By is required and cannot be empty.")
                         if not level_name_id:
                             raise ValueError("Level Name is required and cannot be empty.")
                         if not subject_name_id:
                             raise ValueError("Subject Name is required and cannot be empty.")
-                        if not approved_by_id:
-                            raise ValueError("Approved By is required and cannot be empty.")
-
-                        # Log the processed row for debugging
-                        logger.debug(f"Processing row: {row}")
-                        logger.debug(f"QuestionName: {question_name}, QuestionBy: {question_by_id}, "
-                                     f"LevelName: {level_name_id}, SubjectName: {subject_name_id}, "
-                                     f"IsApproved: {is_approved}, ApprovedBy: {approved_by_id}")
 
                         # Fetch foreign key objects based on the CSV data
-                        question_by = WhoPosts.objects.get(pk=question_by_id)
                         level_name = SchoolLevels.objects.get(pk=level_name_id)
                         subject_name = Subjects.objects.get(pk=subject_name_id)
-                        approved_by = Teachers.objects.get(pk=approved_by_id)
+                        question_by = request.user.teacher  # Assuming the user is the "QuestionBy"
+                        approved_by = request.user.teacher  # Assuming the user is also "ApprovedBy"
 
                         # Create a new question record
                         question = Questions(
@@ -1240,74 +1358,76 @@ def AddQuestions(request):
                             QuestionBy=question_by,
                             LevelName=level_name,
                             SubjectName=subject_name,
-                            IsApproved=is_approved,
+                            IsApproved=True,  # Default to True
                             ApprovedBy=approved_by
                         )
                         question.save()
 
-                        # Display success message for each question added
+                        # Success message
                         messages.success(request, f"Question '{question_name}' added successfully.")
 
                     except Exception as e:
                         # Collect error messages for each row that fails
                         error_message = f"Error processing question: {row.get('QuestionName', 'Unknown')}. Error: {e}"
                         errors.append(error_message)
-                        logger.error(error_message)
 
                 # If there were errors, display them to the user
                 if errors:
                     messages.error(request, "Some questions could not be processed:\n" + "\n".join(errors))
 
                 # Redirect after processing all rows
-                return redirect('teacher:questions')
+                return redirect('backend_questions')
 
             except Exception as e:
                 # Handle errors related to reading the CSV file
-                logger.error(f"Error reading the CSV file: {e}")
                 messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
+                return redirect('backend_questions')
+
         else:
-            questionName = request.POST.get('questionName')
-            question_by_id = request.POST.get('questionBy')
+            # Handle form submission when no CSV file is uploaded
+            question_name = request.POST.get('questionName')
             level_name_id = request.POST.get('levelName')
             subject_name_id = request.POST.get('subjectName')
-            approved_by_id = request.POST.get('approvedBy')
-            isApproved = request.POST.get('isApproved') == 'True'
-            
-            
-            questionBy = WhoPosts.objects.get(id=question_by_id)
-            levelName = SchoolLevels.objects.get(id=level_name_id)
-            subjectName = Subjects.objects.get(id=subject_name_id)
-            approvedBy = Teachers.objects.get(id=approved_by_id)
 
-            # Create a new question record
-            question = Questions(
-                QuestionName=questionName,
-                QuestionBy=questionBy,
-                LevelName=levelName,
-                SubjectName=subjectName,
-                IsApproved=isApproved,
-                ApprovedBy=approvedBy
-            )
-            
-            question.save()
-            messages.error(request, "No CSV file uploaded. Please try again.")
+            try:
+                # Fetch foreign key objects based on the form data
+                level_name = SchoolLevels.objects.get(id=level_name_id)
+                subject_name = Subjects.objects.get(id=subject_name_id)
+                question_by = request.user.teacher  # Assuming the user is the "QuestionBy"
+                approved_by = request.user.teacher  # Assuming the user is also "ApprovedBy"
+
+                # Create a new question record
+                question = Questions(
+                    QuestionName=question_name,
+                    QuestionBy=question_by,
+                    LevelName=level_name,
+                    SubjectName=subject_name,
+                    IsApproved=True,  # Default to True
+                    ApprovedBy=approved_by
+                )
+                question.save()
+                messages.success(request, f"Question '{question_name}' added successfully.")
+
+            except Exception as e:
+                messages.error(request, f"Error adding question: {e}")
+
             return redirect('backend_questions')
-    
+
     else:
         # Handle the case where no CSV file was uploaded
         messages.error(request, "No CSV file uploaded. Please try again.")
         return redirect('backend_questions')
 
-    # Prepare context for rendering the template
-    context = {
-        'sitename': sitename,
-        'page_name': page_name,
-        'icon': icon,
-        'questions': questions,
-    }
+    # # Prepare context for rendering the template
+    # context = {
+    #     'sitename': sitename,
+    #     'page_name': page_name,
+    #     'icon': icon,
+    #     'questions': Questions.objects.all(),
+    # }
 
-    # Render the questions page
-    return redirect('backend_questions')
+    # # Render the questions page
+    # return render(request, 'backend/questions.html', context)
 
 
 
@@ -2315,7 +2435,7 @@ def backend_comments(request):
         comments = Comments.objects.all()
     
      # Set up pagination
-    paginator = Paginator(comments, 10)  # Show 10 students per page
+    paginator = Paginator(comments, 10)  
     page_number = request.GET.get('page')
     try:
         comments = paginator.page(page_number)
@@ -2510,3 +2630,19 @@ def answer_question_detail(request, pk):
 
 
 #==============> 24 for subject assigned allowed to send asked question but other year failed "No teacher assigned"
+#==============> submit empty student id or str instaed of number, csv submit without file
+#==============>  answerby and questionby should be teacher instance not whoposts instance
+
+#==============> comments approve should only display related to teacher
+#==============> csv for adding question should remove unnecessary fields
+#==============> assign to teachers
+#==============> views, likes and notifications count
+#==============> Error pages 500 and 404
+#==============> Response messages for every action 
+#==============> notifications should be disappear after question being answered
+#==============>  comments should be approved first before posted
+#==============>  Icons and footer should be considered
+#==============> update password for students
+#==============> add first and last name for teachers and students on csv upload
+#==============> if subject already assign to teacher should not appeared on lists
+#==============> no teacher object we look on solution either admin not have previlages of view questions or solve it

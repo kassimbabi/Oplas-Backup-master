@@ -25,6 +25,12 @@
                 Students
              </a>
           </li>
+         <li class="nav-item">
+            <a class="nav-link {% if page_name == 'Asssign' %}active{% endif %}" href="{% url "assing-to-class" %}">
+               <i class="feather-icon icon-map-pin me-2"></i>
+               Assign subjects
+            </a>
+         </li>
           {% endif %}
           {% endif %}
           <!-- nav item -->

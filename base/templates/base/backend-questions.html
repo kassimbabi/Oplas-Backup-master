@@ -281,17 +281,17 @@
                           <div class="invalid-feedback">Please enter question name.</div>
                       </div>
               
-                      <div class="row">
+                      {% comment %} <div class="row">
                         <div class="mb-3 col-12 col-md-6">
                             <label for="questionBy" class="form-label">Question By</label>
                             <select class="form-select" id="questionBy" name="questionBy" required="">
                                 <option value="" selected disabled>Select Question By</option>
                                 {% for who_post in who_posts %}
-                                    <option value="{{ who_post.id }}">{{ who_post.PostedBy }}</option>
+                                    <option value="{{ who_post.id }}">{{ who_post.firstName }} {{ who_post.lastName }}</option>
                                 {% endfor %}
                             </select>
                             <div class="invalid-feedback">Please select who posted the question.</div>
-                        </div>
+                        </div> {% endcomment %}
                 
                         <div class="mb-3 col-12 col-md-6">
                             <label for="levelName" class="form-label">Level Name</label>
@@ -316,7 +316,7 @@
                             <div class="invalid-feedback">Please select a subject.</div>
                         </div>
                 
-                        <div class="mb-3 col-12 col-md-4">
+                        {% comment %} <div class="mb-3 col-12 col-md-4">
                             <label for="isApproved" class="form-label">Is Approved</label>
                             <select class="form-select" id="isApproved" name="isApproved" required="">
                                 <option value="" selected disabled>Select Approval Status</option>
@@ -324,9 +324,9 @@
                                 <option value="False">No</option>
                             </select>
                             <div class="invalid-feedback">Please select approval status.</div>
-                        </div>
+                        </div> {% endcomment %}
                 
-                        <div class="mb-3 col-12 col-md-4">
+                        {% comment %} <div class="mb-3 col-12 col-md-4">
                             <label for="approvedBy" class="form-label">Approved By</label>
                             <select class="form-select" id="approvedBy" name="approvedBy" required="">
                                 <option value="" selected disabled>Select Approved By</option>
@@ -335,7 +335,8 @@
                                 {% endfor %}
                             </select>
                             <div class="invalid-feedback">Please select who approved the question.</div>
-                        </div>
+                        </div> {% endcomment %}
+
                       </div>                      
                   </div>
               

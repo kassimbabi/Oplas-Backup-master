@@ -309,27 +309,27 @@
    {% csrf_token %}
    <div class="mb-3 col-md-12">
       <label for="studentID" class="form-label">Student ID</label>
-      <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Student ID" required>
+      <input type="number" class="form-control" id="studentID" name="studentID" placeholder="Student ID" required="">
       <div class="invalid-feedback">Please provide a Student ID.</div>
    </div>
    <div class="mb-3 col-md-4">
       <label for="firstName" class="form-label">First Name</label>
-      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required="">
       <div class="invalid-feedback">Please provide a first name.</div>
    </div>
    <div class="mb-3 col-md-4">
       <label for="middleName" class="form-label">Middle Name</label>
-      <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Middle Name" required>
+      <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Middle Name" required="">
       <div class="invalid-feedback">Please provide a first name.</div>
    </div>
    <div class="mb-3 col-md-4">
       <label for="lastName" class="form-label">Last Name</label>
-      <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+      <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required="">
       <div class="invalid-feedback">Please provide a last name.</div>
    </div>
    <div class="mb-3 col-md-6">
       <label for="gender" class="form-label">Gender</label>
-      <select class="form-select" id="gender" name="gender" required>
+      <select class="form-select" id="gender" name="gender" required="">
          <option value="">Select Gender</option>
          {% for gender in genders %}
          <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
@@ -339,12 +339,12 @@
    </div>
    <div class="mb-3 col-md-6">
       <label for="dob" class="form-label">Date of Birth</label>
-      <input type="date" class="form-control" id="dob" name="dob" required>
+      <input type="date" class="form-control" id="dob" name="dob" required="">
       <div class="invalid-feedback">Please provide a date of birth.</div>
    </div>
    <div class="mb-3 col-md-6">
       <label for="schoolLevel" class="form-label">School Level</label>
-      <select class="form-select" id="schoolLevel" name="schoolLevel" required>
+      <select class="form-select" id="schoolLevel" name="schoolLevel" required="">
          <option value="">Select School Level</option>
          {% for level in school_levels %}
          <option value="{{ level.id }}">{{ level.LevelName }}</option>
@@ -354,7 +354,7 @@
    </div>
    <div class="mb-3 col-md-6">
       <label for="className" class="form-label">School Class</label>
-      <select class="form-select" id="className" name="className" required>
+      <select class="form-select" id="className" name="className" required="">
          <option value="">Select Class</option>
          {% for class in school_classes %}
          <option value="{{ class.id }}">{{ class.ClassName }}</option>
@@ -364,17 +364,17 @@
    </div>
    <div class="mb-3 col-md-4">
       <label for="address" class="form-label">Address</label>
-      <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
+      <input type="text" class="form-control" id="address" name="address" placeholder="Address" required="">
       <div class="invalid-feedback">Please provide an address.</div>
    </div>
    <div class="mb-3 col-md-4">
       <label for="academicYear" class="form-label">Academic Year</label>
-      <input type="text" class="form-control" id="academicYear" name="academicYear" placeholder="Academic Year" required>
+      <input type="text" class="form-control" id="academicYear" name="academicYear" placeholder="Academic Year" required="">
       <div class="invalid-feedback">Please provide an academic year.</div>
    </div>
    <div class="mb-3 col-md-4">
       <label for="status" class="form-label">Status</label>
-      <select class="form-select" id="status" name="status" required>
+      <select class="form-select" id="status" name="status" required="">
          <option value="">Select Status</option>
          {% for status in statuses %}
          <option value="{{ status.id }}">{{ status.StatusName }}</option>
@@ -392,7 +392,7 @@
             {% csrf_token %}
             <div class="mb-3 col-md-12">
                 <label for="csvFile" class="form-label">Upload CSV File</label>
-                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required>
+                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required="">
                 <div class="invalid-feedback">Please provide a CSV file.</div>
             </div>
             <div class="col-md-6 col-12">
