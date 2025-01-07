@@ -216,7 +216,7 @@ class Answers(models.Model):
         verbose_name_plural = 'Answers'
 
 class Students(models.Model):
-    studentID = models.CharField(max_length=100, primary_key=True, verbose_name='Student ID')
+    studentID = models.CharField(max_length=100, unique= True  ,verbose_name='Student ID')
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student', verbose_name='User')
     firstName = models.CharField(max_length=100, verbose_name='First Name')
     middleName = models.CharField(max_length=100, verbose_name='Middle Name')

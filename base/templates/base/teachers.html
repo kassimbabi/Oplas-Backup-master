@@ -157,129 +157,128 @@
  </div>
 
 <!-- add Teacher Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <!-- Modal header -->
+            <div class="modal-header align-items-center d-flex">
+                <h5 class="modal-title" id="paymentModalLabel">Add New Teacher</h5>
+                <!-- Close button -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <!-- Switch for choosing input method -->
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+                    <label class="form-check-label" for="csvSwitch">Add Multiple Teachers with CSV</label>
+                </div>
+                
+                <!-- Form for adding a single teacher -->
+                    <form id="singleTeacherForm" class="row mb-4 needs-validation" method="POST" action="{% url 'add-teacher' %}" novalidate>
+                      {% csrf_token %}
+                        <!-- First Name -->
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="teacherFirstName" class="form-label">First Name</label>
+                            <input id="teacherFirstName" type="text" class="form-control" name="first_name" placeholder="Enter First Name" required="">
+                            <div class="invalid-feedback">Please enter first name.</div>
+                        </div>
+                        <!-- Middle Name -->
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="teacherMiddleName" class="form-label">Middle Name</label>
+                            <input id="teacherMiddleName" type="text" class="form-control" name="middle_name" placeholder="Enter Middle Name">
+                        </div>
+                        <!-- Last Name -->
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="teacherLastName" class="form-label">Last Name</label>
+                            <input id="teacherLastName" type="text" class="form-control" name="last_name" placeholder="Enter Last Name" required="">
+                            <div class="invalid-feedback">Please enter last name.</div>
+                        </div>
  
- <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-       <!-- Modal content -->
-       <div class="modal-content">
-           <!-- Modal header -->
-           <div class="modal-header align-items-center d-flex">
-               <h5 class="modal-title" id="paymentModalLabel">Add New Teacher</h5>
-               <!-- Close button -->
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-           </div>
-           <!-- Modal body -->
-           <div class="modal-body">
-               <!-- Switch for choosing input method -->
-               <div class="form-check form-switch mb-4">
-                   <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
-                   <label class="form-check-label" for="csvSwitch">Add Multiple Teachers with CSV</label>
-               </div>
-               
-               <!-- Form for adding a single teacher -->
-                   <form id="singleTeacherForm" class="row mb-4 needs-validation" method="POST" action="{% url 'add-teacher' %}">
-                     {% csrf_token %}
-                       <!-- First Name -->
-                       <div class="mb-3 col-12 col-md-4">
-                           <label for="teacherFirstName" class="form-label">First Name</label>
-                           <input id="teacherFirstName" type="text" class="form-control" name="first_name" placeholder="Enter First Name" required="">
-                           <div class="invalid-feedback">Please enter first name.</div>
-                       </div>
-                       <!-- Middle Name -->
-                       <div class="mb-3 col-12 col-md-4">
-                           <label for="teacherMiddleName" class="form-label">Middle Name</label>
-                           <input id="teacherMiddleName" type="text" class="form-control" name="middle_name" placeholder="Enter Middle Name">
-                       </div>
-                       <!-- Last Name -->
-                       <div class="mb-3 col-12 col-md-4">
-                           <label for="teacherLastName" class="form-label">Last Name</label>
-                           <input id="teacherLastName" type="text" class="form-control" name="last_name" placeholder="Enter Last Name" required="">
-                           <div class="invalid-feedback">Please enter last name.</div>
-                       </div>
-
-                       <!-- Gender -->
-                       <div class="mb-3 col-12 col-md-6">
-                           <label for="teacherGender" class="form-label">Gender</label>
-                           <select class="form-select" id="teacherGender" name="gender" required="">
-                               <option value="">Select Gender</option>
-                               {% for gender in genders %}
-                               <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
-                               {% endfor %}
-                               
-                           </select>
-                           <div class="invalid-feedback">Please select gender.</div>
-                       </div>
-                       <!-- Date of Birth -->
-                       <div class="mb-3 col-12 col-md-6">
-                           <label for="teacherDob" class="form-label">Date of Birth</label>
-                           <input type="date" class="form-control" id="teacherDob" name="dob" required="">
-                           <div class="invalid-feedback">Please enter date of birth.</div>
-                       </div>
-                       <!-- education level  -->
-                       <div class="mb-3 col-12 col-md-6">
-                        <label for="teacherEducationLevel" class="form-label">Education Level</label>
-                        <select class="form-select" id="teacherEducationLevel" name="education_level" required="">
-                            <option value="">Select Education Level</option>
-                            {% for level in education_levels %}
-                            <option value="{{ level.id }}">{{ level.LevelName }}</option>
-                            {% endfor %}
-                            
-                        </select>
-                        <div class="invalid-feedback">Please select Education Level.</div>
-                    </div>
-                       <!-- Email -->
-                       <div class="mb-3 col-md-6 col-12">
-                           <label for="teacherEmail" class="form-label">Email</label>
-                           <input type="email" class="form-control" id="teacherEmail" name="email_address" placeholder="Enter Email" required="">
-                           <div class="invalid-feedback">Please enter a valid email address.</div>
-                       </div>
-                       <!-- Phone -->
-                       <div class="mb-3 col-md-4 col-12">
-                           <label for="teacherPhone" class="form-label">Phone</label>
-                           <input type="tel" class="form-control" id="teacherPhone" name="phone_number" placeholder="Enter Phone Number" required="">
-                           <div class="invalid-feedback">Please enter a phone number.</div>
-                       </div>
-                       <!-- address -->
-                       <div class="mb-3 col-md-4 col-12">
-                           <label for="teacherAddress" class="form-label">Address</label>
-                           <input type="text" class="form-control" id="teacherAddress" name="address" placeholder="Enter Address" required="">
-                           <div class="invalid-feedback">Please enter department.</div>
-                       </div>
-                          <!-- Status  -->
-                       <div class="mb-3 col-12 col-md-4">
-                        <label for="teacherStatus" class="form-label">Status</label>
-                        <select class="form-select" id="teacherStatus" name="status" required="">
-                            <option value="">Select Status</option>
-                            {% for status in statuses %}
-                            <option value="{{ status.id }}">{{ status.StatusName }}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="invalid-feedback">Please select Status.</div>
-                    </div>
-                       <!-- Button -->
-                       <div class="col-md-6 col-12">
-                           <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Data</button>
-                       </div>
-                   </form>
-
-                   <form class="row mb-4 needs-validation" id="csvUploadForm" method="POST" action="{% url 'teachers' %}" 
-                   enctype="multipart/form-data">
-                     {% csrf_token %}
-                     <div class="mb-3 col-12">
-                         <label for="teacherCsv" class="form-label">Upload CSV File</label>
-                         <input type="file" class="form-control" id="teacherCsv" name="csv_file" accept=".csv" required="">
-                         <div class="invalid-feedback">Please upload a CSV file.</div>
-                         <div class="form-text">Upload a CSV file to add multiple teachers at once.</div>
-                     </div>
-                     <!-- Button -->
-                     <div class="col-md-6 col-12">
-                         <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
-                     </div>
-                 </form>
-           </div>
-       </div>
-   </div>
-</div>
+                        <!-- Gender -->
+                        <div class="mb-3 col-12 col-md-6">
+                            <label for="teacherGender" class="form-label">Gender</label>
+                            <select class="form-select" id="teacherGender" name="gender" required="">
+                                <option value="">Select Gender</option>
+                                {% for gender in genders %}
+                                <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select gender.</div>
+                        </div>
+                        <!-- Date of Birth -->
+                        <div class="mb-3 col-12 col-md-6">
+                            <label for="teacherDob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="teacherDob" name="dob" required="">
+                            <div class="invalid-feedback">Please enter date of birth.</div>
+                        </div>
+                        <!-- education level -->
+                        <div class="mb-3 col-12 col-md-6">
+                            <label for="teacherEducationLevel" class="form-label">Education Level</label>
+                            <select class="form-select" id="teacherEducationLevel" name="education_level" required="">
+                                <option value="">Select Education Level</option>
+                                {% for level in education_levels %}
+                                <option value="{{ level.id }}">{{ level.LevelName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select Education Level.</div>
+                        </div>
+                        <!-- Email -->
+                        <div class="mb-3 col-md-6 col-12">
+                            <label for="teacherEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="teacherEmail" name="email_address" placeholder="Enter Email" required="">
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+                        <!-- Phone -->
+                        <div class="mb-3 col-md-4 col-12">
+                            <label for="teacherPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="teacherPhone" name="phone_number" placeholder="Enter Phone Number" required="">
+                            <div class="invalid-feedback">Please enter a phone number.</div>
+                        </div>
+                        <!-- address -->
+                        <div class="mb-3 col-md-4 col-12">
+                            <label for="teacherAddress" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="teacherAddress" name="address" placeholder="Enter Address" required="">
+                            <div class="invalid-feedback">Please enter department.</div>
+                        </div>
+                           <!-- Status -->
+                        <div class="mb-3 col-12 col-md-4">
+                            <label for="teacherStatus" class="form-label">Status</label>
+                            <select class="form-select" id="teacherStatus" name="status" required="">
+                                <option value="">Select Status</option>
+                                {% for status in statuses %}
+                                <option value="{{ status.id }}">{{ status.StatusName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select Status.</div>
+                        </div>
+                        <!-- Button -->
+                        <div class="col-md-6 col-12">
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Save Data</button>
+                        </div>
+                    </form>
+ 
+                    <!-- CSV Upload Form -->
+                    <form class="row mb-4 needs-validation" id="csvUploadForm" method="POST" action="{% url 'teachers-upload' %}" enctype="multipart/form-data" novalidate>
+                      {% csrf_token %}
+                      <div class="mb-3 col-12">
+                          <label for="teacherCsv" class="form-label">Upload CSV File</label>
+                          <input type="file" class="form-control" id="teacherCsv" name="csv_file" accept=".csv" required="">
+                          <div class="invalid-feedback">Please upload a CSV file.</div>
+                          <div class="form-text">Upload a CSV file to add multiple teachers at once.</div>
+                      </div>
+                      <!-- Button -->
+                      <div class="col-md-6 col-12">
+                          <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
+                      </div>
+                  </form>
+            </div>
+        </div>
+    </div>
+ </div>
+ 
+ 
 
 {% for teacher in teachers %}
 <!-- Edit Teacher Modal -->
@@ -328,7 +327,7 @@
                   <!-- dob-->
                   <div class="mb-3 col-md-6">
                      <label for="editdob{{ teacher.id }}" class="form-label">DOB</label>
-                     <input type="date" class="form-control" id="editEmail{{ teacher.id }}" name="dob" value="{{ teacher.dob }}" required>
+                     <input type="date" class="form-control" id="editEmail{{ teacher.id }}" name="dob" value="{{ teacher.dob | date:'Y-m-d' }}" required>
                   </div>
            </div>
 
@@ -429,5 +428,26 @@
        }
    }
 </script>
+
+<script>
+    // Enable Bootstrap 5 Validation
+    (function() {
+        'use strict'
+        // Fetch all the forms we want to apply validation styles to
+        var forms = document.querySelectorAll('.needs-validation');
+    
+        // Loop over them and prevent submission if invalid
+        Array.prototype.slice.call(forms)
+            .forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })();
+    </script>
 <!-- content here -->
 {% endblock %}

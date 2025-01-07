@@ -2,6 +2,7 @@ from django.urls import path
 from base import views
 
 urlpatterns = [
+
     # path for login and logout
     path('login/', views.loginAuthentication , name= 'login'),
     path('logout/', views.logoutUser, name='logout'),
@@ -51,6 +52,7 @@ urlpatterns = [
     path("add/teacher", views.AddTeachers, name="add-teacher"),
     path('edit/teacher/<int:teacher_id>/', views.edit_teacher, name='edit-teacher'),
     path('delete/teacher/<int:teacher_id>/', views.delete_teacher, name='delete-teacher'),
+    path('teachers/upload/', views.upload_teachers, name='teachers-upload'),
     
     
     # path for manage students

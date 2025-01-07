@@ -206,7 +206,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{% url 'assign-to-class-create' %}">
+                <form method="POST" action="{% url 'assign-to-class-create' %}" class="needs-validation" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="teacher" class="form-label">Teacher</label>
@@ -216,6 +216,7 @@
                             <option value="{{ teacher.id }}">{{ teacher.firstName }} {{ teacher.lastName }}</option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Please select a teacher.</div>
                     </div>
                     <div class="mb-3">
                         <label for="class" class="form-label">Class</label>
@@ -225,14 +226,15 @@
                             <option value="{{ school.id }}">{{ school.ClassName }}</option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Please select a class.</div>
                     </div>
                     <div class="mb-3">
                         <label for="subject" class="form-label">Subject</label>
                         <select class="form-select" id="subject" name="Subject" required>
                             <option value="" disabled selected>Select a subject</option>
                         </select>
+                        <div class="invalid-feedback">Please select a subject.</div>
                     </div>
-                    
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="Status" required>
@@ -241,6 +243,7 @@
                             <option value="{{ status.id }}">{{ status.StatusName }}</option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Please select a status.</div>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Assignment</button>
                 </form>
@@ -248,6 +251,28 @@
         </div>
     </div>
 </div>
+
+<script>
+// Enable Bootstrap 5 Validation
+(function() {
+    'use strict'
+    // Fetch all the forms we want to apply validation styles to
+    var forms = document.querySelectorAll('.needs-validation');
+
+    // Loop over them and prevent submission if invalid
+    Array.prototype.slice.call(forms)
+        .forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+})();
+</script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

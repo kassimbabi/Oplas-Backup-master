@@ -103,7 +103,7 @@
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form method="POST" action="{% url "edit-student" student.studentID %}" class="row needs-validation" novalidate>
+                                                        <form method="POST" action="{% url "edit-student" student.id %}" class="row needs-validation" novalidate>
                                                             {% csrf_token %}
                                                             <!-- Include fields for editing -->
                                                              <div class="row">
@@ -219,7 +219,7 @@
                                                         <p>Are you sure you want to delete <strong>{{ student.firstName }} {{ student.lastName }}</strong>?</p>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <form method="POST" action="{% url 'delete-student' student.studentID %}?page={{ students.number }}&query={{ query }}">
+                                                        <form method="POST" action="{% url 'delete-student' student.id %}?page={{ students.number }}&query={{ query }}">
                                                             {% csrf_token %}
                                                             <button type="submit" class="btn btn-danger">Yes, Delete</button>
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -291,120 +291,182 @@
 
 <!-- Add Student Modal -->
 <div class="modal fade" id="studentModal" tabindex="-1" aria-labelledby="studentModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-         <div class="modal-header align-items-center d-flex">
-            <h5 class="modal-title" id="studentModalLabel">Add New Student</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-         <div class="modal-body">
- <!-- Switch for choosing input method -->
-<div class="form-check form-switch mb-4">
-   <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
-   <label class="form-check-label" for="csvSwitch">Add Multiple Students with CSV</label>
-</div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+       <div class="modal-content">
+          <div class="modal-header align-items-center d-flex">
+             <h5 class="modal-title" id="studentModalLabel">Add New Student</h5>
+             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+  <!-- Switch for choosing input method -->
+ <div class="form-check form-switch mb-4">
+    <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+    <label class="form-check-label" for="csvSwitch">Add Multiple Students with CSV</label>
+ </div>
+ 
+ <!-- Single Student Form -->
+ <form id="singleStudentForm" method="POST" action="{% url 'add-student' %}" class="row needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="mb-3 col-md-12">
+     <label for="studentID" class="form-label">Student ID</label>
+     <input type="text" class="form-control" id="studentID" name="studentID" placeholder="Student ID" required="">
+     <div class="invalid-feedback">Please provide a Student ID.</div>
+  </div>
+  
+    <div class="mb-3 col-md-4">
+       <label for="firstName" class="form-label">First Name</label>
+       <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required="">
+       <div class="invalid-feedback">Please provide a first name.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="middleName" class="form-label">Middle Name</label>
+       <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Middle Name" required="">
+       <div class="invalid-feedback">Please provide a middle name.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="lastName" class="form-label">Last Name</label>
+       <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required="">
+       <div class="invalid-feedback">Please provide a last name.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="gender" class="form-label">Gender</label>
+       <select class="form-select" id="gender" name="gender" required="">
+          <option value="">Select Gender</option>
+          {% for gender in genders %}
+          <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
+          {% endfor %}
+       </select>
+       <div class="invalid-feedback">Please select a gender.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="dob" class="form-label">Date of Birth</label>
+       <input type="date" class="form-control" id="dob" name="dob" required="">
+       <div class="invalid-feedback">Please provide a date of birth.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+        <label for="schoolLevel" class="form-label">School Level</label>
+        <select class="form-select" id="schoolLevel" name="schoolLevel" required>
+            <option value="" disabled selected>Select School Level</option>
+            {% for level in school_levels %}
+            <option value="{{ level.id }}">{{ level.LevelName }}</option>
+            {% endfor %}
+        </select>
+        <div class="invalid-feedback">Please select a school level.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+        <label for="className" class="form-label">School Class</label>
+        <select class="form-select" id="className" name="className" required>
+            <option value="" disabled selected>Select Class</option>
+        </select>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="address" class="form-label">Address</label>
+       <input type="text" class="form-control" id="address" name="address" placeholder="Address" required="">
+       <div class="invalid-feedback">Please provide an address.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="academicYear" class="form-label">Academic Year</label>
+       <input type="text" class="form-control" id="academicYear" name="academicYear" placeholder="Academic Year" required="">
+       <div class="invalid-feedback">Please provide an academic year.</div>
+    </div>
+    <div class="mb-3 col-md-4">
+       <label for="status" class="form-label">Status</label>
+       <select class="form-select" id="status" name="status" required="">
+          <option value="">Select Status</option>
+          {% for status in statuses %}
+          <option value="{{ status.id }}">{{ status.StatusName }}</option>
+          {% endfor %}
+       </select>
+       <div class="invalid-feedback">Please select a status.</div>
+    </div>
+    <div class="col-12">
+       <button type="submit" class="btn btn-primary">Save Data</button>
+    </div>
+ </form>
+ 
+             <!-- CSV Upload Form -->
+             <form id="csvUploadForm" method="POST" action="{% url 'add-student' %}" enctype="multipart/form-data" class="row needs-validation d-none" novalidate >
+             {% csrf_token %}
+             <div class="mb-3 col-md-12">
+                 <label for="csvFile" class="form-label">Upload CSV File</label>
+                 <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required="">
+                 <div class="invalid-feedback">Please provide a CSV file.</div>
+             </div>
+             <div class="col-md-6 col-12">
+                 <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
+             </div>
+             </form>
+ 
+          </div>
+       </div>
+    </div>
+ </div>
+<!-- Pass Preloaded Classes to JavaScript -->
+<script>
+    const allClasses = {{ all_classes|safe }};
+</script>
 
-<!-- Single Student Form -->
-<form id="singleStudentForm" method="POST" action="{% url "add-student" %}" class="row needs-validation" novalidate>
-   {% csrf_token %}
-   <div class="mb-3 col-md-12">
-      <label for="studentID" class="form-label">Student ID</label>
-      <input type="number" class="form-control" id="studentID" name="studentID" placeholder="Student ID" required="">
-      <div class="invalid-feedback">Please provide a Student ID.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="firstName" class="form-label">First Name</label>
-      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required="">
-      <div class="invalid-feedback">Please provide a first name.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="middleName" class="form-label">Middle Name</label>
-      <input type="text" class="form-control" id="middleName" name="middleName" placeholder="Middle Name" required="">
-      <div class="invalid-feedback">Please provide a first name.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="lastName" class="form-label">Last Name</label>
-      <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required="">
-      <div class="invalid-feedback">Please provide a last name.</div>
-   </div>
-   <div class="mb-3 col-md-6">
-      <label for="gender" class="form-label">Gender</label>
-      <select class="form-select" id="gender" name="gender" required="">
-         <option value="">Select Gender</option>
-         {% for gender in genders %}
-         <option value="{{ gender.id }}">{{ gender.GenderName }}</option>
-         {% endfor %}
-      </select>
-      <div class="invalid-feedback">Please select a gender.</div>
-   </div>
-   <div class="mb-3 col-md-6">
-      <label for="dob" class="form-label">Date of Birth</label>
-      <input type="date" class="form-control" id="dob" name="dob" required="">
-      <div class="invalid-feedback">Please provide a date of birth.</div>
-   </div>
-   <div class="mb-3 col-md-6">
-      <label for="schoolLevel" class="form-label">School Level</label>
-      <select class="form-select" id="schoolLevel" name="schoolLevel" required="">
-         <option value="">Select School Level</option>
-         {% for level in school_levels %}
-         <option value="{{ level.id }}">{{ level.LevelName }}</option>
-         {% endfor %}
-      </select>
-      <div class="invalid-feedback">Please select a school level.</div>
-   </div>
-   <div class="mb-3 col-md-6">
-      <label for="className" class="form-label">School Class</label>
-      <select class="form-select" id="className" name="className" required="">
-         <option value="">Select Class</option>
-         {% for class in school_classes %}
-         <option value="{{ class.id }}">{{ class.ClassName }}</option>
-         {% endfor %}
-      </select>
-      <div class="invalid-feedback">Please select a class.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="address" class="form-label">Address</label>
-      <input type="text" class="form-control" id="address" name="address" placeholder="Address" required="">
-      <div class="invalid-feedback">Please provide an address.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="academicYear" class="form-label">Academic Year</label>
-      <input type="text" class="form-control" id="academicYear" name="academicYear" placeholder="Academic Year" required="">
-      <div class="invalid-feedback">Please provide an academic year.</div>
-   </div>
-   <div class="mb-3 col-md-4">
-      <label for="status" class="form-label">Status</label>
-      <select class="form-select" id="status" name="status" required="">
-         <option value="">Select Status</option>
-         {% for status in statuses %}
-         <option value="{{ status.id }}">{{ status.StatusName }}</option>
-         {% endfor %}
-      </select>
-      <div class="invalid-feedback">Please select a status.</div>
-   </div>
-   <div class="col-12">
-      <button type="submit" class="btn btn-primary">Save Data</button>
-   </div>
-</form>
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get modal-specific elements
+        const modal = document.getElementById("studentModal");
+        const schoolLevelSelect = modal.querySelector("#schoolLevel");
+        const classSelect = modal.querySelector("#className");
 
-            <!-- CSV Upload Form -->
-            <form id="csvUploadForm" method="POST" action="{% url "add-student" %}" enctype="multipart/form-data" class="row needs-validation d-none" novalidate >
-            {% csrf_token %}
-            <div class="mb-3 col-md-12">
-                <label for="csvFile" class="form-label">Upload CSV File</label>
-                <input type="file" class="form-control" id="csvFile" name="csv_file" accept=".csv" required="">
-                <div class="invalid-feedback">Please provide a CSV file.</div>
-            </div>
-            <div class="col-md-6 col-12">
-                <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Upload CSV</button>
-            </div>
-            </form>
+        // Parse classes data passed from Django
+        const allClasses = {{ all_classes|safe }};
+        console.log("All Classes Array:", allClasses);
 
-         </div>
-      </div>
-   </div>
-</div>
+        // Handle school level change event
+        schoolLevelSelect.addEventListener("change", function () {
+            const selectedLevelId = parseInt(this.value, 10);
+            console.log("Selected Level ID:", selectedLevelId);
 
+            // Clear class dropdown
+            classSelect.innerHTML = '<option value="" disabled selected>Select Class</option>';
+
+            // Filter and populate classes
+            const filteredClasses = allClasses.filter(cls => cls.SchoolLevel_id === selectedLevelId);
+            console.log("Filtered Classes:", filteredClasses);
+
+            if (filteredClasses.length > 0) {
+                filteredClasses.forEach(cls => {
+                    const option = document.createElement("option");
+                    option.value = cls.id;
+                    option.textContent = cls.ClassName;
+                    classSelect.appendChild(option);
+                });
+            } else {
+                console.warn("No classes found for the selected level.");
+            }
+        });
+    });
+</script>
+
+<script>
+    // Function to enable Bootstrap's custom validation
+    (function () {
+       'use strict';
+       window.addEventListener('load', function () {
+          // Get the forms we want to validate
+          var forms = document.querySelectorAll('.needs-validation');
+ 
+          // Loop over them and prevent submission if invalid
+          Array.prototype.slice.call(forms)
+             .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                   if (!form.checkValidity()) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                   }
+                   form.classList.add('was-validated');
+                }, false);
+             });
+       }, false);
+    })();
+ </script>
+ 
 <script>
    function toggleFormMode() {
        const isCsvMode = document.getElementById('csvSwitch').checked;

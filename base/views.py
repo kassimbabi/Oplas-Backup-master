@@ -644,13 +644,137 @@ def Dashboard(request):
     
     return render(request, 'base/dashboard.html', context)
 
-@login_required(login_url='home')
+# @login_required(login_url='home')
+# def manage_teachers(request):
+#     # Set up context variables for rendering
+#     sitename = "Teachers | OPLAS TANZANIA"
+#     page_name = "Teachers"
+#     icon = "fa fa-dashboard"
+    
+#     # Fetch all teacher-related data
+#     teachers = Teachers.objects.all()
+#     genders = Genders.objects.all()
+#     education_levels = EducationLevels.objects.all()
+#     statuses = Statuses.objects.all()
+
+#     # Handle search query
+#     query = request.GET.get('q', '')
+#     if query:
+#         teachers = Teachers.objects.filter(
+#             Q(firstName__icontains=query) |
+#             Q(middleName__icontains=query) |
+#             Q(lastName__icontains=query) |
+#             Q(emailAddress__icontains=query)
+#         )
+#     else:
+#         teachers = Teachers.objects.all()
+
+#     # Handle form submission for CSV file upload
+#     if request.method == 'POST':
+#         if 'csv_file' in request.FILES:
+#             csv_file = request.FILES['csv_file']
+#             try:
+#                 # Decode and read the CSV file
+#                 decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
+#                 reader = csv.DictReader(decoded_file)
+
+#                 # Initialize a list to keep track of errors
+#                 errors = []
+
+#                 # Process each row in the CSV
+#                 for row in reader:
+#                     try:
+#                         # Fetch foreign key objects based on the CSV data
+#                         gender = Genders.objects.get(pk=row['gender'])
+#                         educationLevel = EducationLevels.objects.get(pk=row['educationLevel'])
+#                         status = Statuses.objects.get(pk=row['status'])
+
+#                         # Parse and validate the date in DD/MM/YYYY format
+#                         try:
+#                             dob = datetime.strptime(row['dob'], '%d/%m/%Y').date()
+#                         except ValueError:
+#                             raise ValueError(f"Invalid date format for DOB: {row['dob']}. It must be in DD/MM/YYYY format.")
+
+#                         # Create a new user
+#                         user = User.objects.create_user(
+#                             username=row['emailAddress'],
+#                             password=row['lastName'],  # Use a secure method to generate passwords in production
+#                             email=row['emailAddress'],
+#                             first_name = row['firstName'],
+#                             last_name =row['lastName'],
+#                             role='teacher'
+#                         )
+
+#                         # Create a new teacher record
+#                         Teachers.objects.create(
+#                             user=user,
+#                             firstName=row['firstName'],
+#                             middleName=row['middleName'],
+#                             lastName=row['lastName'],
+#                             gender=gender,
+#                             dob=dob,
+#                             educationLevel=educationLevel,
+#                             address=row['address'],
+#                             phoneNumber=row['phoneNumber'],
+#                             emailAddress=row['emailAddress'],
+#                             status=status,
+#                         )
+
+#                         # Success message for each added teacher
+#                         messages.success(request, f"Teacher '{row['firstName']}' added successfully.")
+#                         # return redirect('teachers')
+
+#                     except Exception as e:
+#                         # Collect error messages for each row that fails
+#                         error_message = f"Error processing teacher: {row.get('firstName', 'Unknown')}. Error: {e}"
+#                         errors.append(error_message)
+#                         print(error_message)
+
+#                 # If there were errors, display them to the user
+#                 if errors:
+#                     messages.error(request, "Some teachers could not be processed:\n" + "\n".join(errors))
+
+#             except Exception as e:
+#                 # Handle errors related to reading the CSV file
+#                 print(f"Error reading the CSV file: {e}")
+#                 messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
+#         else:
+#             # Handle the case where no CSV file was uploaded
+#             messages.error(request, "No CSV file uploaded. Please try again.")
+#         return redirect('teachers')
+    
+#     # Set up pagination
+#     paginator = Paginator(teachers, 10)  # Show 10 teachers per page
+#     page_number = request.GET.get('page')
+#     try:
+#         teachers = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         teachers = paginator.page(1)
+#     except EmptyPage:
+#         teachers = paginator.page(paginator.num_pages)
+
+#     # Prepare context for rendering the template
+#     context = {
+#         'sitename': sitename,
+#         'page_name': page_name,
+#         'icon': icon,
+#         'teachers': teachers,
+#         'genders': genders,
+#         'education_levels': education_levels,
+#         'statuses': statuses,
+#         'query': query,
+#     }
+
+ 
+#     return render(request, 'base/teachers.html', context)
+
+
 def manage_teachers(request):
     # Set up context variables for rendering
     sitename = "Teachers | OPLAS TANZANIA"
     page_name = "Teachers"
     icon = "fa fa-dashboard"
-    
+
     # Fetch all teacher-related data
     teachers = Teachers.objects.all()
     genders = Genders.objects.all()
@@ -666,78 +790,6 @@ def manage_teachers(request):
             Q(lastName__icontains=query) |
             Q(emailAddress__icontains=query)
         )
-    else:
-        teachers = Teachers.objects.all()
-
-    # Handle form submission for CSV file upload
-    if request.method == 'POST':
-        if 'csv_file' in request.FILES:
-            csv_file = request.FILES['csv_file']
-            try:
-                # Decode and read the CSV file
-                decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
-                reader = csv.DictReader(decoded_file)
-
-                # Initialize a list to keep track of errors
-                errors = []
-
-                # Process each row in the CSV
-                for row in reader:
-                    try:
-                        # Fetch foreign key objects based on the CSV data
-                        gender = Genders.objects.get(pk=row['gender'])
-                        educationLevel = EducationLevels.objects.get(pk=row['educationLevel'])
-                        status = Statuses.objects.get(pk=row['status'])
-
-                        # Parse and validate the date in DD/MM/YYYY format
-                        try:
-                            dob = datetime.strptime(row['dob'], '%d/%m/%Y').date()
-                        except ValueError:
-                            raise ValueError(f"Invalid date format for DOB: {row['dob']}. It must be in DD/MM/YYYY format.")
-
-                        # Create a new user
-                        user = User.objects.create_user(
-                            username=row['emailAddress'],
-                            password=row['lastName'],  # Use a secure method to generate passwords in production
-                            email=row['emailAddress'],
-                            role='teacher'
-                        )
-
-                        # Create a new teacher record
-                        Teachers.objects.create(
-                            user=user,
-                            firstName=row['firstName'],
-                            middleName=row['middleName'],
-                            lastName=row['lastName'],
-                            gender=gender,
-                            dob=dob,
-                            educationLevel=educationLevel,
-                            address=row['address'],
-                            phoneNumber=row['phoneNumber'],
-                            emailAddress=row['emailAddress'],
-                            status=status,
-                        )
-
-                        # Success message for each added teacher
-                        messages.success(request, f"Teacher '{row['firstName']}' added successfully.")
-
-                    except Exception as e:
-                        # Collect error messages for each row that fails
-                        error_message = f"Error processing teacher: {row.get('firstName', 'Unknown')}. Error: {e}"
-                        errors.append(error_message)
-                        print(error_message)
-
-                # If there were errors, display them to the user
-                if errors:
-                    messages.error(request, "Some teachers could not be processed:\n" + "\n".join(errors))
-
-            except Exception as e:
-                # Handle errors related to reading the CSV file
-                print(f"Error reading the CSV file: {e}")
-                messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
-        else:
-            # Handle the case where no CSV file was uploaded
-            messages.error(request, "No CSV file uploaded. Please try again.")
 
     # Set up pagination
     paginator = Paginator(teachers, 10)  # Show 10 teachers per page
@@ -761,8 +813,66 @@ def manage_teachers(request):
         'query': query,
     }
 
- 
     return render(request, 'base/teachers.html', context)
+
+
+def upload_teachers(request):
+    if request.method == 'POST' and 'csv_file' in request.FILES:
+        csv_file = request.FILES['csv_file']
+        try:
+            decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
+            reader = csv.DictReader(decoded_file)
+
+            errors = []  
+
+            for row in reader:
+                try:
+                    gender = Genders.objects.get(pk=row['gender'])
+                    education_level = EducationLevels.objects.get(pk=row['educationLevel'])
+                    status = Statuses.objects.get(pk=row['status'])
+
+                    
+                    dob = datetime.strptime(row['dob'], '%d/%m/%Y').date()
+
+                    user = User.objects.create_user(
+                        username=row['emailAddress'],
+                        password=row['lastName'],  
+                        email=row['emailAddress'],
+                        first_name=row['firstName'],
+                        last_name=row['lastName'],
+                        role='teacher'
+                    )
+
+                    Teachers.objects.create(
+                        user=user,
+                        firstName=row['firstName'],
+                        middleName=row['middleName'],
+                        lastName=row['lastName'],
+                        gender=gender,
+                        dob=dob,
+                        educationLevel=education_level,
+                        address=row['address'],
+                        phoneNumber=row['phoneNumber'],
+                        emailAddress=row['emailAddress'],
+                        status=status,
+                    )
+
+                    messages.success(request, f"Teacher '{row['firstName']}' added successfully.")
+
+                except Exception as e:
+                    error_message = f"Error processing teacher: {row.get('firstName', 'Unknown')}. Error: {e}"
+                    errors.append(error_message)
+
+            if errors:
+                messages.error(request, "Some teachers could not be processed:\n" + "\n".join(errors))
+
+        except Exception as e:
+            
+            messages.error(request, f"Failed to process the CSV file: {e}")
+    else:
+        messages.error(request, "No valid CSV file uploaded. Please try again.")
+
+    return redirect('teachers')  
 
 
 @login_required(login_url='home')
@@ -832,9 +942,12 @@ def AddTeachers(request):
     }
     
     return render(request, 'base/teachers.html', context)
+
 @login_required(login_url='home')
 def edit_teacher(request, teacher_id):
     teacher = Teachers.objects.get(pk=teacher_id)
+    user = User.objects.get(username=teacher.emailAddress) 
+
     if request.method == 'POST':
         firstName = request.POST.get('firstName')
         middleName = request.POST.get('middleName')
@@ -847,12 +960,10 @@ def edit_teacher(request, teacher_id):
         emailAddress = request.POST.get('emailAddress')
         status_id = request.POST.get('status')
         
-        
-        
         gender = Genders.objects.get(pk=gender_id)
         educationLevel = EducationLevels.objects.get(pk=educationLevel_id)
         status = Statuses.objects.get(pk=status_id)
-        
+
         teacher.firstName = firstName
         teacher.middleName = middleName
         teacher.lastName = lastName
@@ -864,6 +975,14 @@ def edit_teacher(request, teacher_id):
         teacher.emailAddress = emailAddress
         teacher.status = status
         teacher.save()
+
+        user.username = emailAddress  
+        user.email = emailAddress
+        user.first_name = firstName 
+        user.last_name = lastName   
+        user.set_password(lastName)  
+        user.save()
+
         messages.success(request, 'Teacher updated successfully')
         return redirect('teachers')
     else:
@@ -874,6 +993,8 @@ def edit_teacher(request, teacher_id):
             'statuses': Statuses.objects.all()
         }
         return render(request, 'base/teachers.html', context)
+
+    
 @login_required(login_url='home')    
 def delete_teacher(request, teacher_id):
     
@@ -888,17 +1009,21 @@ def delete_teacher(request, teacher_id):
 
 
 # Function to handle managing  students starting here
+
 @login_required(login_url='home')
-def manage_students(request):    
+def manage_students(request):
     sitename = "STUDENTS | OPLAS TANZANIA"
     page_name = 'Students'
     students = Students.objects.all()
     genders = Genders.objects.all()
     school_levels = SchoolLevels.objects.all()
-    school_classes = SchoolClases.objects.all()
     statuses = Statuses.objects.all()
+    school_classes = SchoolClases.objects.all()
     
-            # Handle search query
+    # Preload all classes to filter client-side
+    all_classes = list(SchoolClases.objects.values('id', 'ClassName', 'SchoolLevel_id'))
+    
+    # Handle search query
     query = request.GET.get('q', '')
     if query:
         students = Students.objects.filter(
@@ -910,7 +1035,7 @@ def manage_students(request):
     else:
         students = Students.objects.all()
     
-       # Set up pagination
+    # Set up pagination
     paginator = Paginator(students, 10)  # Show 10 students per page
     page_number = request.GET.get('page')
     try:
@@ -919,63 +1044,59 @@ def manage_students(request):
         students = paginator.page(1)
     except EmptyPage:
         students = paginator.page(paginator.num_pages)
-        
-  
-
-        
+    
     context = {
         'sitename': sitename,
         'page_name': page_name,
         'students': students,
         'genders': genders,
         'school_levels': school_levels,
-        'school_classes': school_classes,
         'statuses': statuses,
+        'all_classes': all_classes,
+        'school_classes': school_classes,
     }
     
     return render(request, 'base/students.html', context)
+
+
+
+
 @login_required(login_url='home')
 def register_student(request):
-    # Set up context variables for rendering
     sitename = "Students | OPLAS TANZANIA"
     page_name = "Students"
     icon = "fa fa-dashboard"
 
-    # Handle form submission for CSV file upload
     if request.method == 'POST':
         if 'csv_file' in request.FILES:
             csv_file = request.FILES['csv_file']
             try:
-                # Decode and read the CSV file
                 decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
                 reader = csv.DictReader(decoded_file)
 
-                # Initialize a list to keep track of errors
                 errors = []
 
-                # Process each row in the CSV
                 for row in reader:
                     try:
-                        # Fetch foreign key objects based on the CSV data
                         gender = Genders.objects.get(pk=row['gender'])
                         schoolLevel = SchoolLevels.objects.get(pk=row['schoolLevel'])
-                        className = SchoolClases.objects.get(pk=row['className'])  # Fetch className
+                        className = SchoolClases.objects.get(pk=row['className'])  
                         status = Statuses.objects.get(pk=row['status'])
 
-                        # Parse and validate the date in DD/MM/YYYY format
                         try:
                             dob = datetime.strptime(row['dob'], '%d/%m/%Y').date()
                         except ValueError:
                             raise ValueError(f"Invalid date format for DOB: {row['dob']}. It must be in DD/MM/YYYY format.")
 
-                        # Create a new user
+
                         user = User.objects.create_user(
                             username=row['studentID'],
                             password=row['lastName'], 
+                            first_name=row['firstName'],
+                            last_name=row['lastName'],
                             role='student',
                         )
 
-                        # Create a new student record
                         Students.objects.create(
                             user=user,
                             studentID=row['studentID'],
@@ -991,24 +1112,19 @@ def register_student(request):
                             status=status,
                         )
 
-                        # Display success message for each student added
                         messages.success(request, f"Student '{row['firstName']}' added successfully.")
 
                     except Exception as e:
-                        # Collect error messages for each row that fails
                         error_message = f"Error processing student: {row.get('firstName', 'Unknown')}. Error: {e}"
                         errors.append(error_message)
                         print(error_message)
 
-                # If there were errors, display them to the user
                 if errors:
                     messages.error(request, "Some students could not be processed:\n" + "\n".join(errors))
 
-                # Redirect after processing all rows
                 return redirect('students')
 
             except Exception as e:
-                # Handle errors related to reading the CSV file
                 print(f"Error reading the CSV file: {e}")
                 messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
         else:
@@ -1056,7 +1172,6 @@ def register_student(request):
             student.save()
             return redirect('students')
 
-    # Prepare context for rendering the template
     
     context = {
         'sitename': sitename,
@@ -1064,19 +1179,15 @@ def register_student(request):
         'icon': icon,
     }
 
-    # Render the students registration page
     return render(request, 'base/students.html', context)
 
 
-# Function to handle updating a student
 @login_required(login_url='home')
 def edit_student(request, pk):
-    # Fetch the student object by ID
-    student = Students.objects.get(studentID=pk)
-    
+    student = Students.objects.get(id=pk)
+    user = User.objects.get(username=student.user.username)  
+
     if request.method == 'POST':
-        # Retrieve form data
-        
         firstName = request.POST.get('firstName')
         middleName = request.POST.get('middleName')
         lastName = request.POST.get('lastName')
@@ -1087,16 +1198,12 @@ def edit_student(request, pk):
         address = request.POST.get('address')
         academicYear = request.POST.get('academicYear')
         status_id = request.POST.get('status')
-        
-        
-        # Fetch related models
+
         gender = Genders.objects.get(pk=gender_id)
         schoolLevel = SchoolLevels.objects.get(pk=schoolLevel_id)
         className = SchoolClases.objects.get(pk=className_id)
         status = Statuses.objects.get(pk=status_id)
-        
-        # Update the student object with new values
-        
+
         student.firstName = firstName
         student.middleName = middleName
         student.lastName = lastName
@@ -1107,13 +1214,18 @@ def edit_student(request, pk):
         student.address = address
         student.academicYear = academicYear
         student.status = status
-
         student.save()
-        # Success message and redirect
+
+
+        user.first_name = firstName 
+        user.last_name = lastName   
+        user.set_password(lastName) 
+
+        user.save()
+
         messages.success(request, 'Student updated successfully')
         return redirect('students')  
     else:
-        # Provide context for rendering the edit form in case of GET request
         context = {
             'student': student,
             'genders': Genders.objects.all(),
@@ -1124,12 +1236,13 @@ def edit_student(request, pk):
         return render(request, 'base/students.html', context)
 
 
+
 # Function to handle deleting a student
 @login_required(login_url='home')
 def delete_student(request, pk):
     current_page = request.GET.get('page', 1)
 
-    student = Students.objects.get(studentID=pk)
+    student = Students.objects.get(id=pk)
     student.delete()
 
     query = request.GET.get('query', '')  
@@ -2644,3 +2757,10 @@ def answer_question_detail(request, pk):
 #==============> add first and last name for teachers and students on csv upload
 #==============> if subject already assign to teacher should not appeared on lists
 #==============> no teacher object we look on solution either admin not have previlages of view questions or solve it
+#==============> UNIQUE constraint failed: base_user.username repeat studentID
+#==============> The given username must be set when submit empty studentID
+#==============> Validate each field submission to avoid errors
+#==============> Errors on add students or teacher not prevent user from being added so may cause conflict when student or teacher added again
+
+
+
