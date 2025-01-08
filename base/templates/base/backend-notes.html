@@ -218,31 +218,124 @@
         </div>
     </div>
 </div>
-
-
 <!-- Add Note Modal -->
 <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-lg modal-dialog-centered">
-       <div class="modal-content">
-           <div class="modal-header">
-               <h5 class="modal-title">Add New Note</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-           </div>
-           <div class="modal-body">
-               <form method="POST" enctype="multipart/form-data" action="{% url 'notes-upload' %}">
-                   {% csrf_token %}
-                   <div class="mb-3">
-                       <label for="UploadCSV" class="form-label">Upload CSV</label>
-                       <input type="file" name="csv_file" class="form-control" accept=".csv">
-                   </div>
-                   <div class="mb-3">
-                       <label for="UploadPDFs" class="form-label">Upload Multiple PDFs</label>
-                       <input type="file" name="pdf_files" class="form-control" accept=".pdf" multiple>
-                   </div>
-                   <button type="submit" class="btn btn-primary">Add Note</button>
-               </form>
-           </div>
-       </div>
-   </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <!-- Switch for choosing input method (outside of the forms) -->
+                    <div class="form-check form-switch mb-4">
+                        <input class="form-check-input" type="checkbox" id="csvSwitchNote" onchange="toggleNoteFormMode()">
+                        <label class="form-check-label" for="csvSwitchNote">Add Multiple Notes with CSV</label>
+                    </div>
+
+                    <!-- Single Form Submission -->
+                    <form id="singleForm" method="POST" enctype="multipart/form-data" action="{% url 'create-note' %}" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Single Form -->
+                        <div id="singleFormNote">
+                            <!-- Note Name -->
+                            <div class="mb-3">
+                                <label for="noteName" class="form-label">Note Name</label>
+                                <input type="text" id="noteName" name="note_name" class="form-control" required>
+                                <div class="invalid-feedback">Please enter the note name.</div>
+                            </div>
+ 
+                            <!-- Subject Name -->
+                            <div class="mb-3">
+                                <label for="subjectName" class="form-label">Subject Name</label>
+                                <select id="subjectName" name="subject_name" class="form-select" required>
+                                    <option value="" disabled selected>Select Subject</option>
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.SubjectName }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a subject.</div>
+                            </div>
+ 
+                            <!-- Level Name -->
+                            <div class="mb-3">
+                                <label for="levelName" class="form-label">Level Name</label>
+                                <select id="levelName" name="level_name" class="form-select" required>
+                                    <option value="" disabled selected>Select Level</option>
+                                    {% for level in levels %}
+                                    <option value="{{ level.id }}">{{ level.LevelName }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Please select a level.</div>
+                            </div>
+ 
+                            <!-- File Upload -->
+                            <div class="mb-3">
+                                <label for="uploadFile" class="form-label">Upload File</label>
+                                <input type="file" id="uploadFile" name="upload_file" accept=".pdf" class="form-control" required>
+                                <div class="invalid-feedback">Please upload a file.</div>
+                            </div>
+ 
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary" onclick="validateSingleForm(event)">Add Note</button>
+                        </div>
+                    </form>
+                    
+                    <!-- CSV Form Submission -->
+                    <form id="csvForm" method="POST" enctype="multipart/form-data" action="{% url 'notes-upload' %}" style="display: none;" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- CSV File Upload -->
+                        <div class="mb-3">
+                            <label for="csvFileNote" class="form-label">Upload CSV File</label>
+                            <input type="file" id="csvFileNote" name="csv_file" class="form-control" accept=".csv" required>
+                            <div class="invalid-feedback">Please upload a CSV file.</div>
+                        </div>
+                         
+                         <!-- File Upload -->
+                         <div class="mb-3">
+                            <label for="uploadFile" class="form-label">Upload Files</label>
+                            <input type="file" id="uploadFile" name="pdf_files" accept=".pdf" multiple class="form-control" required>
+                            <div class="invalid-feedback">Please upload files.</div>
+                        </div>
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary" onclick="validateCSVForm(event)">Upload Notes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    function toggleNoteFormMode() {
+        const isCSV = document.getElementById('csvSwitchNote').checked;
+        document.getElementById('singleForm').style.display = isCSV ? 'none' : 'block';
+        document.getElementById('csvForm').style.display = isCSV ? 'block' : 'none';
+    }
+
+    // Single form validation
+    function validateSingleForm(event) {
+        const form = event.target.closest('form');
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated');
+        }
+    }
+
+    // CSV form validation
+    function validateCSVForm(event) {
+        const form = event.target.closest('form');
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated');
+        }
+    }
+</script>
+
+
 {% endblock %}

@@ -77,6 +77,7 @@ urlpatterns = [
     
     # path for manage notes
     path("backend-notes", views.BackendNotes, name="backend_notes"),
+    path('create-note/', views.create_note, name='create-note'),
     path('notes/upload', views.notes_upload, name='notes-upload'),
     path('edit/notes/<int:pk>/', views.edit_notes, name='edit-notes'),
     path('delete/notes/<int:pk>/', views.delete_notes, name='delete-notes'),
@@ -85,18 +86,21 @@ urlpatterns = [
     
     # path for manage books
     path("backend-books", views.BackendBooks, name="backend_books"),
-    path('books/upload', views.books_upload, name='books-upload'),
+    path('books/create/', views.create_book, name='books-create'),
+    path('books/upload/', views.books_upload, name='books-upload'),
     path('edit/book/<int:pk>/', views.edit_book, name='edit-book'),
     path('delete/book/<int:book_id>/', views.delete_book, name='delete-book'),
     
     # path for manage previous papers
     path("backend-papers", views.BackendPapers, name="backend_papers"),
+    path('papers/create/', views.create_paper, name='create-paper'),
     path('papers/upload', views.papers_upload, name='papers-upload'),
     path('edit/paper/<int:pk>/', views.edit_paper, name='edit-paper'),
     path('delete/paper/<int:pk>/', views.delete_paper, name='delete-paper'),
     
     # path for manage videos
     path("video-lessons", views.BackendVideoLessons, name="backend_video"),
+    path('create-video/', views.create_video, name='create-video'),
     path('videos/upload', views.videos_upload, name='videos-upload'),
     path('edit/video/<int:pk>/', views.edit_video, name='edit-video'),
     path('delete/video/<int:pk>/', views.delete_video, name='delete-video'),

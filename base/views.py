@@ -644,129 +644,6 @@ def Dashboard(request):
     
     return render(request, 'base/dashboard.html', context)
 
-# @login_required(login_url='home')
-# def manage_teachers(request):
-#     # Set up context variables for rendering
-#     sitename = "Teachers | OPLAS TANZANIA"
-#     page_name = "Teachers"
-#     icon = "fa fa-dashboard"
-    
-#     # Fetch all teacher-related data
-#     teachers = Teachers.objects.all()
-#     genders = Genders.objects.all()
-#     education_levels = EducationLevels.objects.all()
-#     statuses = Statuses.objects.all()
-
-#     # Handle search query
-#     query = request.GET.get('q', '')
-#     if query:
-#         teachers = Teachers.objects.filter(
-#             Q(firstName__icontains=query) |
-#             Q(middleName__icontains=query) |
-#             Q(lastName__icontains=query) |
-#             Q(emailAddress__icontains=query)
-#         )
-#     else:
-#         teachers = Teachers.objects.all()
-
-#     # Handle form submission for CSV file upload
-#     if request.method == 'POST':
-#         if 'csv_file' in request.FILES:
-#             csv_file = request.FILES['csv_file']
-#             try:
-#                 # Decode and read the CSV file
-#                 decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
-#                 reader = csv.DictReader(decoded_file)
-
-#                 # Initialize a list to keep track of errors
-#                 errors = []
-
-#                 # Process each row in the CSV
-#                 for row in reader:
-#                     try:
-#                         # Fetch foreign key objects based on the CSV data
-#                         gender = Genders.objects.get(pk=row['gender'])
-#                         educationLevel = EducationLevels.objects.get(pk=row['educationLevel'])
-#                         status = Statuses.objects.get(pk=row['status'])
-
-#                         # Parse and validate the date in DD/MM/YYYY format
-#                         try:
-#                             dob = datetime.strptime(row['dob'], '%d/%m/%Y').date()
-#                         except ValueError:
-#                             raise ValueError(f"Invalid date format for DOB: {row['dob']}. It must be in DD/MM/YYYY format.")
-
-#                         # Create a new user
-#                         user = User.objects.create_user(
-#                             username=row['emailAddress'],
-#                             password=row['lastName'],  # Use a secure method to generate passwords in production
-#                             email=row['emailAddress'],
-#                             first_name = row['firstName'],
-#                             last_name =row['lastName'],
-#                             role='teacher'
-#                         )
-
-#                         # Create a new teacher record
-#                         Teachers.objects.create(
-#                             user=user,
-#                             firstName=row['firstName'],
-#                             middleName=row['middleName'],
-#                             lastName=row['lastName'],
-#                             gender=gender,
-#                             dob=dob,
-#                             educationLevel=educationLevel,
-#                             address=row['address'],
-#                             phoneNumber=row['phoneNumber'],
-#                             emailAddress=row['emailAddress'],
-#                             status=status,
-#                         )
-
-#                         # Success message for each added teacher
-#                         messages.success(request, f"Teacher '{row['firstName']}' added successfully.")
-#                         # return redirect('teachers')
-
-#                     except Exception as e:
-#                         # Collect error messages for each row that fails
-#                         error_message = f"Error processing teacher: {row.get('firstName', 'Unknown')}. Error: {e}"
-#                         errors.append(error_message)
-#                         print(error_message)
-
-#                 # If there were errors, display them to the user
-#                 if errors:
-#                     messages.error(request, "Some teachers could not be processed:\n" + "\n".join(errors))
-
-#             except Exception as e:
-#                 # Handle errors related to reading the CSV file
-#                 print(f"Error reading the CSV file: {e}")
-#                 messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
-#         else:
-#             # Handle the case where no CSV file was uploaded
-#             messages.error(request, "No CSV file uploaded. Please try again.")
-#         return redirect('teachers')
-    
-#     # Set up pagination
-#     paginator = Paginator(teachers, 10)  # Show 10 teachers per page
-#     page_number = request.GET.get('page')
-#     try:
-#         teachers = paginator.page(page_number)
-#     except PageNotAnInteger:
-#         teachers = paginator.page(1)
-#     except EmptyPage:
-#         teachers = paginator.page(paginator.num_pages)
-
-#     # Prepare context for rendering the template
-#     context = {
-#         'sitename': sitename,
-#         'page_name': page_name,
-#         'icon': icon,
-#         'teachers': teachers,
-#         'genders': genders,
-#         'education_levels': education_levels,
-#         'statuses': statuses,
-#         'query': query,
-#     }
-
- 
-#     return render(request, 'base/teachers.html', context)
 
 
 def manage_teachers(request):
@@ -1020,10 +897,8 @@ def manage_students(request):
     statuses = Statuses.objects.all()
     school_classes = SchoolClases.objects.all()
     
-    # Preload all classes to filter client-side
     all_classes = list(SchoolClases.objects.values('id', 'ClassName', 'SchoolLevel_id'))
     
-    # Handle search query
     query = request.GET.get('q', '')
     if query:
         students = Students.objects.filter(
@@ -1036,7 +911,7 @@ def manage_students(request):
         students = Students.objects.all()
     
     # Set up pagination
-    paginator = Paginator(students, 10)  # Show 10 students per page
+    paginator = Paginator(students, 10)  
     page_number = request.GET.get('page')
     try:
         students = paginator.page(page_number)
@@ -1368,38 +1243,42 @@ def assign_to_class_delete(request, pk):
 
 # Function to handle managing questions starting from here
 @login_required(login_url='home')
-def BackendQuestions(request):    
+def BackendQuestions(request):
     sitename = "QUESTIONS | OPLAS TANZANIA"
     page_name = 'BackendQuestions'
     questions = Questions.objects.all()
     who_posts = Teachers.objects.all()
     teachers = Teachers.objects.all()
-    
-    teacher_id = request.user.teacher.id 
 
-    subjects = Subjects.objects.filter(
-    id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
-)
-  
-    levels = SchoolLevels.objects.filter(
-    id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
-)
-    
-    # Handle search query
+    if hasattr(request.user, 'teacher'):
+        teacher_id = request.user.teacher.id
+
+        subjects = Subjects.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+        )
+
+        levels = SchoolLevels.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+        )
+    else:
+
+        subjects = Subjects.objects.all()
+        levels = SchoolLevels.objects.all()
+
     query = request.GET.get('q', '')
     if query:
         questions = Questions.objects.filter(
             Q(QuestionName__icontains=query) |
-            Q(QuestionBy__PostedBy__icontains=query) | 
-            Q(LevelName__LevelName__icontains=query) |   
-            Q(SubjectName__SubjectName__icontains=query) |  
-            Q(ApprovedBy__lastName__icontains=query)  
+            Q(QuestionBy__PostedBy__icontains=query) |
+            Q(LevelName__LevelName__icontains=query) |
+            Q(SubjectName__SubjectName__icontains=query) |
+            Q(ApprovedBy__lastName__icontains=query)
         )
     else:
         questions = Questions.objects.all()
-    
-           # Set up pagination
-    paginator = Paginator(questions, 10)  
+
+    # Set up pagination
+    paginator = Paginator(questions, 10)
     page_number = request.GET.get('page')
     try:
         questions = paginator.page(page_number)
@@ -1407,7 +1286,7 @@ def BackendQuestions(request):
         questions = paginator.page(1)
     except EmptyPage:
         questions = paginator.page(paginator.num_pages)
-        
+
     context = {
         'sitename': sitename,
         'page_name': page_name,
@@ -1418,8 +1297,9 @@ def BackendQuestions(request):
         'teachers': teachers,
         'query': query
     }
-    
+
     return render(request, 'base/backend-questions.html', context)
+
 
 
 # Set up logging for debugging
@@ -1431,27 +1311,22 @@ def AddQuestions(request):
     page_name = "Questions"
     icon = "fa fa-dashboard"
 
-    # Handle form submission for CSV file upload
     if request.method == 'POST':
         if 'csv_file' in request.FILES:
             csv_file = request.FILES['csv_file']
             try:
-                # Decode and read the CSV file
+
                 decoded_file = csv_file.read().decode('ISO-8859-1').splitlines()
                 reader = csv.DictReader(decoded_file)
 
-                # Initialize a list to keep track of errors
                 errors = []
 
-                # Process each row in the CSV
                 for row in reader:
                     try:
-                        # Extract fields from the CSV row
                         question_name = row.get('QuestionName', '').strip()
                         level_name_id = row.get('LevelName', '').strip()
                         subject_name_id = row.get('SubjectName', '').strip()
 
-                        # Validate that all required fields are present
                         if not question_name:
                             raise ValueError("Question Name is required and cannot be empty.")
                         if not level_name_id:
@@ -1459,63 +1334,53 @@ def AddQuestions(request):
                         if not subject_name_id:
                             raise ValueError("Subject Name is required and cannot be empty.")
 
-                        # Fetch foreign key objects based on the CSV data
                         level_name = SchoolLevels.objects.get(pk=level_name_id)
                         subject_name = Subjects.objects.get(pk=subject_name_id)
-                        question_by = request.user.teacher  # Assuming the user is the "QuestionBy"
-                        approved_by = request.user.teacher  # Assuming the user is also "ApprovedBy"
+                        question_by = request.user.teacher 
+                        approved_by = request.user.teacher  
 
-                        # Create a new question record
                         question = Questions(
                             QuestionName=question_name,
                             QuestionBy=question_by,
                             LevelName=level_name,
                             SubjectName=subject_name,
-                            IsApproved=True,  # Default to True
+                            IsApproved=True,  
                             ApprovedBy=approved_by
                         )
                         question.save()
 
-                        # Success message
                         messages.success(request, f"Question '{question_name}' added successfully.")
 
                     except Exception as e:
-                        # Collect error messages for each row that fails
                         error_message = f"Error processing question: {row.get('QuestionName', 'Unknown')}. Error: {e}"
                         errors.append(error_message)
 
-                # If there were errors, display them to the user
                 if errors:
                     messages.error(request, "Some questions could not be processed:\n" + "\n".join(errors))
 
-                # Redirect after processing all rows
                 return redirect('backend_questions')
 
             except Exception as e:
-                # Handle errors related to reading the CSV file
                 messages.error(request, "Failed to read the CSV file. Please ensure it's formatted correctly.")
                 return redirect('backend_questions')
 
         else:
-            # Handle form submission when no CSV file is uploaded
             question_name = request.POST.get('questionName')
             level_name_id = request.POST.get('levelName')
             subject_name_id = request.POST.get('subjectName')
 
             try:
-                # Fetch foreign key objects based on the form data
                 level_name = SchoolLevels.objects.get(id=level_name_id)
                 subject_name = Subjects.objects.get(id=subject_name_id)
-                question_by = request.user.teacher  # Assuming the user is the "QuestionBy"
-                approved_by = request.user.teacher  # Assuming the user is also "ApprovedBy"
+                question_by = request.user.teacher  
+                approved_by = request.user.teacher  
 
-                # Create a new question record
                 question = Questions(
                     QuestionName=question_name,
                     QuestionBy=question_by,
                     LevelName=level_name,
                     SubjectName=subject_name,
-                    IsApproved=True,  # Default to True
+                    IsApproved=True,
                     ApprovedBy=approved_by
                 )
                 question.save()
@@ -1527,7 +1392,6 @@ def AddQuestions(request):
             return redirect('backend_questions')
 
     else:
-        # Handle the case where no CSV file was uploaded
         messages.error(request, "No CSV file uploaded. Please try again.")
         return redirect('backend_questions')
 
@@ -1601,8 +1465,20 @@ def BackendNotes(request):
     sitename = "NOTES | OPLAS TANZANIA"
     page_name = 'BackendNotes'   
     notes = Notes.objects.all()
-    subjects =  Subjects.objects.all()
-    levels = SchoolLevels.objects.all()
+
+    if hasattr(request.user, 'teacher'):
+        teacher_id = request.user.teacher.id
+
+        subjects = Subjects.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+        )
+
+        levels = SchoolLevels.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+        )
+    else:
+        subjects = Subjects.objects.all()
+        levels = SchoolLevels.objects.all()
     
     # Handle search query
     query = request.GET.get('q', '')
@@ -1635,6 +1511,25 @@ def BackendNotes(request):
     }
     
     return render(request, 'base/backend-notes.html', context)
+
+def create_note(request):
+    if request.method == 'POST':
+        note_name = request.POST.get('note_name')
+        subject = request.POST.get('subject_name')
+        level = request.POST.get('level_name')
+        note_file = request.FILES.get('upload_file')
+
+        note = Notes(
+            NotesName=note_name,
+            SubjectName_id=subject,
+            LevelName_id=level,
+            UploadFile=note_file,
+        )
+        note.save()
+
+        return redirect('backend_notes')  
+
+
 @login_required(login_url='home')
 def notes_upload(request):
     if request.method == 'POST':
@@ -1643,79 +1538,66 @@ def notes_upload(request):
             pdf_files = request.FILES.getlist('pdf_files')
 
             try:
-                # Read and decode the CSV file
                 decoded_csv = csv_file.read().decode('ISO-8859-1').splitlines()
                 reader = csv.DictReader(decoded_csv)
 
-                # Normalize headers by stripping whitespace
                 headers = [header.strip() for header in reader.fieldnames]
                 if 'PDFName' not in headers:
                     return render(request, 'base/backend-notes.html', {'errors': ["CSV does not contain 'PDFName' column."]})
 
-                # Create a dictionary of PDF files keyed by their names
                 pdf_dict = {pdf.name.strip(): pdf for pdf in pdf_files}
 
                 errors = []
                 successful_notes = []
 
-                # Iterate through each row in the CSV
                 for row in reader:
-                    # Normalize row keys
                     normalized_row = {key.strip(): value for key, value in row.items()}
 
                     pdf_name = normalized_row.get('PDFName')
                     if not pdf_name:
                         errors.append("Row does not contain 'PDFName'.")
-                        continue  # Skip this iteration
+                        continue  
 
-                    # Attempt to retrieve the corresponding PDF file
                     pdf_file = pdf_dict.get(pdf_name.strip())
 
-                    # Attempt to get ForeignKey instances
                     subject_name = normalized_row.get('SubjectName')
                     level_name = normalized_row.get('LevelName')
 
-                    # Fetch the Subject instance
                     try:
                         subject_instance = Subjects.objects.get(id=subject_name.strip())
                     except Subjects.DoesNotExist:
                         errors.append(f"Subject with ID '{subject_name}' not found.")
-                        continue  # Skip to the next row if the subject is not found
+                        continue  
 
-                    # Fetch the Level instance
                     try:
                         level_instance = SchoolLevels.objects.get(id=level_name.strip())
                     except SchoolLevels.DoesNotExist:
                         errors.append(f"Level with ID '{level_name}' not found.")
-                        continue  # Skip to the next row if the level is not found
+                        continue  
 
-                    # Create a new note record
                     note = Notes(
                         NotesName=normalized_row['NotesName'].strip(),
                         SubjectName=subject_instance,
                         LevelName=level_instance,
                     )
 
-                    # Attach the PDF file if it exists
                     if pdf_file:
                         note.UploadFile.save(pdf_file.name, pdf_file)
-                        note.save()  # Save the note record here
-                        successful_notes.append(note.NotesName)  # Track successful saves
+                        note.save()  
+                        successful_notes.append(note.NotesName)
                     else:
                         errors.append(f"PDF file '{pdf_name}' not found for notes '{normalized_row['NotesName']}'.")
 
-                # Check if there are any errors or successful saves
                 if errors:
                     return render(request, 'base/backend-notes.html', {'errors': errors})
                 elif successful_notes:
-                    return redirect('backend_notes')  # Redirect to the index page on success
+                    return redirect('backend_notes') 
 
             except Exception as e:
-                # Handle exceptions and log them if necessary
+
                 print("Error:", str(e))
                 return render(request, 'base/backend-notes.html', {'errors': [str(e)]})
 
-    # Render the upload form for GET requests or after processing the POST request
     return redirect('backend_notes')
 
 
@@ -1768,9 +1650,23 @@ def BackendBooks(request):
     page_name = 'BackendBooks'  
     
     books = Books.objects.all()
-    subjects =  Subjects.objects.all()
-    levels = SchoolLevels.objects.all()
-    
+
+    # Check if the logged-in user is a teacher
+    if hasattr(request.user, 'teacher'):
+        teacher_id = request.user.teacher.id
+
+        # Get subjects and levels assigned to the teacher
+        subjects = Subjects.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+        )
+
+        levels = SchoolLevels.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+        )
+    else:
+        # If the user is not a teacher, provide all subjects and levels
+        subjects = Subjects.objects.all()
+        levels = SchoolLevels.objects.all()  
     # Handle search query
     query = request.GET.get('q', '')
     if query:
@@ -1810,6 +1706,25 @@ def BackendBooks(request):
     
     return render(request, 'base/backend-books.html', context)
 
+def create_book(request):
+    if request.method == 'POST':
+        book_name = request.POST.get('book_name')
+        subject_name = request.POST.get('subject_name')
+        level_name = request.POST.get('level_name')
+        upload_file = request.FILES.get('upload_file')
+
+        book = Books(
+            BookName=book_name,
+            SubjectName_id=subject_name,
+            LevelName_id=level_name,
+            UploadFile=upload_file,
+        )
+        book.save()
+        messages.success(request, "Book added successfully!")
+        return redirect('backend_books')
+    return render(request, 'books_form.html')
+
+    
 @login_required(login_url='home')
 def books_upload(request):
 
@@ -1872,14 +1787,14 @@ def books_upload(request):
                 if errors:
                     return render(request, 'base/backend-books.html', {'errors': errors})
                 elif successful_books:
-                    return redirect('BackendBooks')  
+                    return redirect('backend_books')  
 
             except Exception as e:
 
                 print("Error:", str(e))  
                 return render(request, 'base/backend-books.html', {'errors': [str(e)]})
 
-    return redirect('BackendBooks')
+    return redirect('backend_books')
 
 
 @login_required(login_url='home')
@@ -1940,11 +1855,22 @@ def delete_book(request, book_id):
 def BackendPapers(request):    
     sitename = "PREVIOUS PAPERS | OPLAS TANZANIA"
     page_name = 'BackendPapers' 
-    subjects = Subjects.objects.all()
-    levels = SchoolLevels.objects.all()
     papers = Papers.objects.all() 
-    
-    # Handle search query
+
+    if hasattr(request.user, 'teacher'):
+        teacher_id = request.user.teacher.id
+
+        subjects = Subjects.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+        )
+
+        levels = SchoolLevels.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+        )
+    else:
+        subjects = Subjects.objects.all()
+        levels = SchoolLevels.objects.all()   
+
     query = request.GET.get('q', '')
     if query:
         papers = Papers.objects.filter(
@@ -1978,6 +1904,40 @@ def BackendPapers(request):
 
 
 
+login_required(login_url='home')
+def create_paper(request):
+    if request.method == 'POST':
+        paper_name = request.POST.get('paper_name')
+        subject_id = request.POST.get('subject_name')
+        level_id = request.POST.get('level_name')
+        upload_file = request.FILES.get('upload_file')
+
+        try:
+            subject = Subjects.objects.get(id=subject_id)
+            level = SchoolLevels.objects.get(id=level_id)
+
+            paper = Papers(
+                PaperName=paper_name,
+                SubjectName=subject,
+                LevelName=level,
+                UploadFile=upload_file
+            )
+            paper.save()
+
+            messages.success(request, f"Paper '{paper_name}' has been uploaded successfully!")
+            return redirect('backend_papers')  
+        except Subjects.DoesNotExist:
+            messages.error(request, "The selected subject does not exist.")
+        except SchoolLevels.DoesNotExist:
+            messages.error(request, "The selected school level does not exist.")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+
+    return redirect('backend_papers')
+
+    
+    
+
 # Configure logging
 logger = logging.getLogger(__name__)
 @login_required(login_url='home')
@@ -2010,7 +1970,6 @@ def papers_upload(request):
                     level_id = normalized_row.get('LevelName')
                     pdf_name = normalized_row.get('PDFName')
 
-                    # Fetch instances
                     try:
                         subject_instance = Subjects.objects.get(id=subject_id)
                         level_instance = SchoolLevels.objects.get(id=level_id)
@@ -2021,7 +1980,6 @@ def papers_upload(request):
                         errors.append(f"Level with ID '{level_id}' not found.")
                         continue
 
-                    # Create Paper entry
                     paper = Papers(
                         PaperName=paper_name,
                         SubjectName=subject_instance,
@@ -2053,7 +2011,7 @@ def papers_upload(request):
 
 @login_required(login_url='home')
 def edit_paper(request, pk):
-    paper = Papers.objects.get( id=pk)  # Fetch the paper to edit
+    paper = Papers.objects.get( id=pk) 
     subjects = Subjects.objects.all()
     levels = SchoolLevels.objects.all()
 
@@ -2077,12 +2035,6 @@ def edit_paper(request, pk):
             return redirect('backend_papers') 
         else:
             messages.error(request, 'Please fill in all required fields.')
-
-    context = {
-        'paper': paper,
-        'subjects': subjects,
-        'levels': levels
-    }
     return redirect('backend_papers') 
 
 
@@ -2107,8 +2059,20 @@ def BackendVideoLessons(request):
     page_name = 'BackendVideo' 
      
     videos = Videos.objects.all()
-    subjects =  Subjects.objects.all()
-    levels = SchoolLevels.objects.all()
+
+    if hasattr(request.user, 'teacher'):
+        teacher_id = request.user.teacher.id
+
+        subjects = Subjects.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('Subject_id', flat=True)
+        )
+
+        levels = SchoolLevels.objects.filter(
+            id__in=AssignToClasses.objects.filter(Teacher_id=teacher_id).values_list('School__SchoolLevel_id', flat=True)
+        )
+    else:
+        subjects = Subjects.objects.all()
+        levels = SchoolLevels.objects.all() 
     
     # Handle search query
     query = request.GET.get('q', '')
@@ -2142,6 +2106,22 @@ def BackendVideoLessons(request):
     
     return render(request, 'base/backend-video.html', context)
 
+def create_video(request):
+    if request.method == 'POST':
+        video_name = request.POST.get('video_name')
+        subject = request.POST.get('subject_name')
+        level = request.POST.get('level_name')
+        video_file = request.FILES.get('upload_file')
+
+        video = Videos(
+            VideosName=video_name,
+            SubjectName_id=subject,
+            LevelName_id=level,
+            UploadFile=video_file
+        )
+        video.save()
+
+        return redirect('backend_video') 
 
 
 @login_required(login_url='home')
@@ -2223,6 +2203,8 @@ def videos_upload(request):
 
 
     return redirect('backend_video')
+
+
 @login_required(login_url='home')
 def edit_video(request, pk):
     video = Videos.objects.get(id=pk)
@@ -2267,7 +2249,7 @@ def BackendAnswers(request):
     
     answers = Answers.objects.all()
     questions = Questions.objects.all()
-    who_posts = WhoPosts.objects.all()
+    who_posts = Teachers.objects.all()
     teachers = Teachers.objects.all()
     
      # Handle search query
@@ -2309,6 +2291,9 @@ def BackendAnswers(request):
 
 @login_required(login_url='home')
 def answers_upload(request):
+    answer_by = request.user.teacher  # Get the teacher from the logged-in user
+    approved_by = request.user.teacher  # Set approved_by to the teacher of the logged-in user
+    is_approved = True  # Set approval status to True
 
     if request.method == 'POST':
 
@@ -2319,9 +2304,9 @@ def answers_upload(request):
                 decoded_csv = csv_file.read().decode('ISO-8859-1').splitlines()
                 reader = csv.DictReader(decoded_csv)
                 headers = [header.strip() for header in reader.fieldnames]
-                required_headers = ['QuestionID', 'AnswerText', 'AnswerBy', 'IsApproved', 'ApprovedBy']
+                required_headers = ['QuestionID', 'AnswerText']
 
-       
+                # Check for missing headers
                 missing_headers = [header for header in required_headers if header not in headers]
                 if missing_headers:
                     error_message = f"CSV does not contain the following required columns: {', '.join(missing_headers)}."
@@ -2331,44 +2316,31 @@ def answers_upload(request):
                 errors = []
                 successful_answers = []
 
-            
+                # Process each row in the CSV
                 for row in reader:
                     normalized_row = {key.strip(): value.strip() for key, value in row.items()}
                     question_id = normalized_row.get('QuestionID')
                     answer_text = normalized_row.get('AnswerText')
-                    answer_by_id = normalized_row.get('AnswerBy')
-                    is_approved = normalized_row.get('IsApproved', 'false').lower() == 'true'
-                    approved_by_id = normalized_row.get('ApprovedBy')
 
-        
                     try:
+                        # Get the Question instance by ID
                         question_instance = Questions.objects.get(id=question_id)
-                        answer_by_instance = WhoPosts.objects.get(id=answer_by_id)
-                        approved_by_instance = Teachers.objects.get(id=approved_by_id)
                     except Questions.DoesNotExist:
                         errors.append(f"Question with ID '{question_id}' not found.")
                         messages.warning(request, errors[-1])
                         continue
-                    except WhoPosts.DoesNotExist:
-                        errors.append(f"User with ID '{answer_by_id}' not found.")
-                        messages.warning(request, errors[-1])
-                        continue
-                    except Teachers.DoesNotExist:
-                        errors.append(f"Teacher with ID '{approved_by_id}' not found.")
-                        messages.warning(request, errors[-1])
-                        continue
 
+                    # Create and save the Answer instance
                     answer = Answers(
                         QuestionName=question_instance,
-                        AnswerBy=answer_by_instance,
+                        AnswerBy=answer_by,  # Use the logged-in user's teacher
                         Answer=answer_text,
-                        IsApproved=is_approved,
-                        ApprovedBy=approved_by_instance
+                        IsApproved=is_approved,  # Set approval status to True
+                        ApprovedBy=approved_by  # Use the logged-in user's teacher
                     )
                     answer.save()
                     successful_answers.append(answer.Answer)
 
-               
                 if errors:
                     messages.error(request, "Errors encountered during CSV processing.")
                     return render(request, 'base/backend-answers.html', {'errors': errors})
@@ -2384,38 +2356,28 @@ def answers_upload(request):
         elif 'QuestionName' in request.POST:
             question_id = request.POST.get('QuestionName')
             answer = request.POST.get('answer')
-            answer_by_id = request.POST.get('answerBy')
-            is_approved_str = request.POST.get('isApproved')
-            is_approved = is_approved_str == 'True'
-            approved_by_id = request.POST.get('approvedBy')
 
             try:
+                # Get the Question instance by ID
                 question_instance = Questions.objects.get(id=question_id)
-                answer_by_instance = WhoPosts.objects.get(id=answer_by_id)
-                approved_by_instance = Teachers.objects.get(id=approved_by_id)
             except Questions.DoesNotExist:
                 messages.warning(request, f"Question with ID '{question_id}' not found.")
                 return redirect('backend_answers')
-            except WhoPosts.DoesNotExist:
-                messages.warning(request, f"User with ID '{answer_by_id}' not found.")
-                return redirect('backend_answers')
-            except Teachers.DoesNotExist:
-                messages.warning(request, f"Teacher with ID '{approved_by_id}' not found.")
-                return redirect('backend_answers')
 
-  
+            # Create and save the Answer instance
             answer = Answers(
                 QuestionName=question_instance,
-                AnswerBy=answer_by_instance,
+                AnswerBy=answer_by,  # Use the logged-in user's teacher
                 Answer=answer,
-                IsApproved=is_approved,
-                ApprovedBy=approved_by_instance
+                IsApproved=is_approved,  # Set approval status to True
+                ApprovedBy=approved_by  # Use the logged-in user's teacher
             )
             answer.save()
             messages.success(request, "Answer successfully submitted.")
             return redirect('backend_answers')
 
-    return render(request, 'base/backend-answers.html')  
+    return render(request, 'base/backend-answers.html')
+
 
 
 @login_required(login_url='home')
@@ -2762,5 +2724,6 @@ def answer_question_detail(request, pk):
 #==============> Validate each field submission to avoid errors
 #==============> Errors on add students or teacher not prevent user from being added so may cause conflict when student or teacher added again
 
+#==============> How teachers will know question ID to fill on CSV when answers needed to be upload 
 
 

@@ -40,15 +40,6 @@
                             <input class="form-control" type="search" name="q" placeholder="Search book" aria-label="Search" value="{{ request.GET.q }}">
                         </form>
                     </div>
-                       <!-- select option -->
-                       {% comment %} <div class="col-lg-2 col-md-4 col-12">
-                          <select class="form-select">
-                             <option selected="">Status</option>
-                             <option value="1">Active</option>
-                             <option value="2">Deactive</option>
-                             <option value="3">Draft</option>
-                          </select>
-                       </div> {% endcomment %}
                     </div>
                  </div>
                  <!-- card body -->
@@ -147,50 +138,141 @@
         </div>
      </div>
  </div>
+<!-- Button to Open Modal -->
+<div>
+    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">New Book</a>
+</div>
 
+<!-- Modal Form -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Add New Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
- <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-       <!-- modal content -->
-       <div class="modal-content">
-          <!-- modal header -->
-          <div class="modal-header align-items-center d-flex">
-             <h5 class="modal-title" id="paymentModalLabel">Upload CSV File</h5>
-             <!-- button -->
-             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <!-- Modal body -->
-          <div class="modal-body">
-             <div>
-                <!-- Form -->
-                <form class="row mb-4 needs-validation" novalidate enctype="multipart/form-data" action="{% url 'books-upload' %}" method="POST">
-                  {% csrf_token %}
-                  
-                  <!-- CSV File Upload -->
-                  <div class="mb-3 col-12">
-                      <label for="csvFile" class="form-label">Upload CSV File</label>
-                      <input id="csvFile" type="file" class="form-control" name="csv_file" accept=".csv" required>
-                      <div class="invalid-feedback">Please upload a CSV file.</div>
-                  </div>
-              
-                  <!-- PDF Files Upload -->
-                  <div class="mb-3 col-12">
-                      <label for="pdfFiles" class="form-label">Upload PDF Files (select multiple)</label>
-                      <input id="pdfFiles" type="file" class="form-control" name="pdf_files" accept=".pdf" multiple required>
-                      <div class="invalid-feedback">Please upload at least one PDF file.</div>
-                  </div>
-              
-                  <!-- Button -->
-                  <div class="col-md-6 col-12">
-                      <button class="btn btn-primary" type="submit"><i class="bi bi-save"></i> Upload</button>
-                  </div>
-              </form>
-              
-             </div>
-          </div>
-       </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Switch for Choosing Input Method -->
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="csvSwitch" onchange="toggleFormMode()">
+                    <label class="form-check-label" for="csvSwitch">Add Multiple Answers with CSV</label>
+                </div>
+
+                <!-- Single Form Submission -->
+                <div id="singleForm">
+                    <form id="singleFormElement" action="{% url 'books-create' %}" method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <!-- Book Name -->
+                        <div class="mb-3">
+                            <label for="bookName" class="form-label">Book Name</label>
+                            <input type="text" id="bookName" name="book_name" class="form-control" required>
+                            <div class="invalid-feedback">Please enter the book name.</div>
+                        </div>
+
+                        <!-- Subject Name -->
+                        <div class="mb-3">
+                            <label for="subjectName" class="form-label">Subject Name</label>
+                            <select id="subjectName" name="subject_name" class="form-select" required>
+                                <option value="" disabled selected>Select Subject</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.SubjectName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select a subject.</div>
+                        </div>
+
+                        <!-- Level Name -->
+                        <div class="mb-3">
+                            <label for="levelName" class="form-label">Level Name</label>
+                            <select id="levelName" name="level_name" class="form-select" required>
+                                <option value="" disabled selected>Select Level</option>
+                                {% for level in levels %}
+                                <option value="{{ level.id }}">{{ level.LevelName }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select a level.</div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label for="uploadFile" class="form-label">Upload File</label>
+                            <input type="file" id="uploadFile" name="upload_file" class="form-control" accept=".pdf" required>
+                            <div class="invalid-feedback">Please upload a file.</div>
+                        </div>
+                        
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+
+                <!-- CSV Form Submission -->
+                <div id="csvForm" style="display: none;">
+                    <form id="csvFormElement" action="{% url 'books-upload' %}" method="POST" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        <!-- CSV File Upload -->
+                        <div class="mb-3">
+                            <label for="csvFile" class="form-label">Upload CSV File</label>
+                            <input type="file" id="csvFile" name="csv_file" class="form-control" accept=".csv" required >
+                            <div class="invalid-feedback">Please upload a CSV file.</div>
+                        </div>
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label for="uploadFile" class="form-label">Upload Books File</label>
+                            <input type="file" id="uploadFile" name="pdf_files" class="form-control" accept=".pdf" Multiple required >
+                            <div class="invalid-feedback">Please upload a books file.</div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
- </div>
+</div>
+
+<script>
+    function toggleFormMode() {
+        const isCSV = document.getElementById('csvSwitch').checked;
+        document.getElementById('singleForm').style.display = isCSV ? 'none' : 'block';
+        document.getElementById('csvForm').style.display = isCSV ? 'block' : 'none';
+
+        // Reset form states
+        if (isCSV) {
+            document.getElementById('singleFormElement').reset();
+            document.getElementById('singleFormElement').classList.remove('was-validated');
+        } else {
+            document.getElementById('csvFormElement').reset();
+            document.getElementById('csvFormElement').classList.remove('was-validated');
+        }
+    }
+
+    // Bootstrap Form Validation
+    (function () {
+        'use strict';
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('form');
+
+        // Loop over them and prevent submission if invalid
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+
+
+
  {% for book in books %}
  <!-- Edit Book Modal -->
  <div class="modal fade" id="editBookModal{{ book.id }}" tabindex="-1" aria-labelledby="editBookModalLabel{{ book.id }}" aria-hidden="true">
